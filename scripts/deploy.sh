@@ -13,7 +13,6 @@ repo=${repo#*/} # Remove 'github-owner/' from the string to retrieve 'repo-name'
 # Log in to Stackery using email and password stored in Travis CI
 $stackery login --email $STACKERY_EMAIL --password $STACKERY_PASSWORD --non-interactive
 
-
 # Deploy to Stackery using AWS access and secret keys
 echo "Deploying stack $repo to environment $env using git branch $branch"
 echo "repo = $repo"
