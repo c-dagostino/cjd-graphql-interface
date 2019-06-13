@@ -1,0 +1,8 @@
+type sbdoctorGroups {
+    doctorGroupId: Int
+    doctorGroupName: String
+    doctorGroupInitials: String
+    doctorGroupAccount: String
+    doctorGroupIconColor: String
+    doctorGroupIconFontColor: String
+}

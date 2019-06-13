@@ -1,0 +1,9 @@
+
+type sbpageloadlogs {
+    sbpageloadlogid: Int
+    sbpageloaddate: String
+    sbpageloadtime: Int
+    sbpageloadurl: String
+    sbpageloadip: String
+    sbpageloadrefer: String
+  }

@@ -1,0 +1,7 @@
+type sbautologins {
+    sbautologinId: Int
+    sbautologinSEcode: String
+    sbautologinSBEcode: String
+    sbautologinKey: String
+    sbautologinExpire: String
+}

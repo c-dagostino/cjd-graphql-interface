@@ -1,0 +1,6 @@
+type sbCancelReasonGroups {
+    sbCancelReasonGroupId: Int
+    sbCancelReasonGroup: String
+    sbCancelReasonGroupOrderNum: Int
+    sbCancelReasonGroupInactive: Boolean
+}

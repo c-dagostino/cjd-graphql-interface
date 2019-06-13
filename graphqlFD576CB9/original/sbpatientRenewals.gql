@@ -1,0 +1,17 @@
+type sbpatientRenewals {
+    sbpatientRenewalId: Int 
+    sbpatientRenewalPatientId: Int
+    sbpatientRenewalTriggerDate: String
+    sbpatientRenewalEmail1Date: String
+    sbpatientRenewalEmail1Viewed: String
+    sbpatientRenewalText1Date: String
+    sbpatientRenewalEmail2Date: String
+    sbpatientRenewalEmail2Viewed: String
+    sbpatientRenewalText2Date: String
+    sbpatientRenewalRoboCall: String
+    sbpatientRenewalYes: String
+    sbpatientRenewalPing: String
+    sbpatientRenewalNo: String
+    sbpatientRenewalNoWhyId: Int
+    sbpatientRenewalNoWhyExpanded: String
+}

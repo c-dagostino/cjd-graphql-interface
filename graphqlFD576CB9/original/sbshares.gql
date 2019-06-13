@@ -1,0 +1,11 @@
+type sbshares {
+    shareid: Int
+    patientid: Int
+    shareAdded: String
+    shareValue: Float
+    shareUsed: Boolean
+    shareUsedDate: String
+    transactionId: Int
+    createdAt: String
+    updatedAt: String
+}

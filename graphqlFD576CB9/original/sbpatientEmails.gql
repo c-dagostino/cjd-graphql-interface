@@ -1,0 +1,9 @@
+type sbpatientEmails {
+    patientEmailId: Int
+    teamId: Int
+    patientId: Int
+    patientEmailDate: String
+    patientEmailSubject: String
+    patientEmailMsg: String
+    patientEmailType: String
+}

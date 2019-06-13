@@ -1,0 +1,5 @@
+type sbinvestorgroups {
+    sbinvestorgroupid: Int
+    sbinvestorgroup_name: String
+    sbinvestorgroup_active: Boolean
+}

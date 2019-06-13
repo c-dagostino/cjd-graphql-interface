@@ -1,0 +1,10 @@
+type sblogs_team {
+    sblogId: Int
+    sblogTeamId: Int
+    sblogDate: String
+    sblogBy: String
+    sblogIp: String
+    sblogSessionId: String
+    sblogUpdate: String
+    sblogPatientId: Int
+}

@@ -1,0 +1,5 @@
+type sbpaidAdCampaignGroups {
+    paidAdCampaignGroupId: Int
+    paidAdCampaignGroupName: String
+    paidAdCampaignGroupNotes: String
+}

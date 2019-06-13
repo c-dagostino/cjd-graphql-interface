@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "devDependencies": {
+    "aws-sdk": "~2"
+  },
+  "dependencies": {
+    "@sightbox-engineering/orm": "^2.1.1",
+    "@sightbox-engineering/utils": "^1.0.2"
+  }
+}

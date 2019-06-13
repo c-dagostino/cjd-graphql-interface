@@ -1,0 +1,14 @@
+type sbteamUpdates {
+    sbteamUpdateId: Int
+    sbteamUpdateTitle: String
+    sbteamUpdateDesc: String
+    sbteamUpdateHTML: String
+    sbteamUpdateCreatedDate: String
+    sbteamUpdateCreatedBy: Int
+    sbteamUpdateEditedDate: String
+    sbteamUpdateEditedBy: Int
+    sbteamUpdateApprovedDate: String
+    sbteamUpdateApprovedBy: Int
+    sbteamUpdateShowDate: String
+    sbteamUpdateHidden: Boolean
+}

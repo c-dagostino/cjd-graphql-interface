@@ -1,0 +1,29 @@
+type Contact {
+	id: Int!
+	type: ContactType!
+	value: String!
+}
+
+input createContactInput {
+	type: ContactType!
+	value: String! 
+}
+
+input updateContactInput {
+	type: ContactType
+	value: String
+}
+
+input deleteContactInput {
+	id: Int!
+}
+
+input linkContactToDoctorInput {
+	doctorId: Int!
+	contactId: Int!
+}
+
+input linkContactToPracticeInput {
+	contactId: Int!
+	practiceId: Int!
+}

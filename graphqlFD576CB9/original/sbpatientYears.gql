@@ -1,0 +1,8 @@
+type sbpatientYears {
+    sbpatientYearId: Int
+    sbpatientId: Int
+    sbpatientStartDate: String
+    sbpatientEndDate: String
+    createdAt: String
+    updatedAt: String
+}

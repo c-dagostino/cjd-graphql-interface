@@ -1,0 +1,8 @@
+type sbteamUpdatesLinkTable {
+    sbteamUpdatesLinkId: Int
+    sbteamUpdateId: Int
+    sbteamId: Int
+    sbteamUpdateViewConfirmDate: String
+    sbteamUpdateViewConfirmBy: Int
+    sbteamUpdateViewConfirmIp: String
+}

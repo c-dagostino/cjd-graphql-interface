@@ -1,0 +1,55 @@
+interface Event {
+  id: ID!
+  event: EventEnum!
+  description: String
+  recordId: String!
+  teamId: Int
+  createdAt: AWSDateTime
+}
+
+type TeamMemberEvent implements Event {
+  id: ID!
+  event: EventEnum!
+  description: String
+  recordId: String!
+  teamId: Int
+  createdAt: AWSDateTime
+  ip: AWSIPAddress!
+  browser: String!
+  userAgent: String!
+  version: String!
+  action: TMActionEnums
+}
+
+type FaxEvent implements Event {
+  id: ID!
+  event: EventEnum!
+  recordId: String!
+  teamId: Int
+  to: String
+  from: String
+  createdAt: AWSDateTime
+  description: String
+  memberId: Int
+}
+
+type MarqetaEvent implements Event {
+  id: ID!
+  event: EventEnum!
+  description: String
+  recordId: String!
+  teamId: Int
+  createdAt: AWSDateTime
+  doctorId: Int
+}
+
+input CreateFaxEventInput {
+  event: EventEnum!
+  description: String
+  recordId: String!
+  teamId: Int
+  rxVerified: Boolean,
+  rxVerifiedDate: AWSDateTime,
+  rxVerifiedBy: String,
+  rxVerifiedIP: AWSIPAddress
+}

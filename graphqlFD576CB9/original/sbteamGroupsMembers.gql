@@ -1,0 +1,5 @@
+type sbteamGroupsMembers {
+    groupsMembersId: Int
+    teamMemberId: Int!
+    groupId: Int!
+}

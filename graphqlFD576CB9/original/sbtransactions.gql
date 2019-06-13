@@ -1,0 +1,23 @@
+type sbtransactions {
+    sbtransactionId: Int
+    subscriberId: Int
+    sbtransactionPatientId: Int
+    sbtransactionDate: String
+    sbtransactionType: String
+    sbtransactionSubTotal: Float
+    sbtransactionSalesTax: Float
+    sbtransactionTotal: Float
+    sbtransactionReceiptEmail: String
+    sbtransactionApproved: String
+    sbtransactionRespMsg: String
+    sbtransactionAuthCode: String
+    sbtransactionPnRef: String
+    sbtransactionAVSaddr: String
+    sbtransactionAVSzip: String
+    sbtransactionCVVmatch: String
+    sbtransactionIAVS: String
+    sbtransactionResult: String
+    sbtransactionAutorun: Boolean
+    createdAt: String
+    updatedAt: String
+}

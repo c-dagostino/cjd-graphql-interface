@@ -1,0 +1,18 @@
+type sbSnapshotShipments {
+    sbSnapshotShipmentId: Int
+    sbSnapshotShipmentDate: String
+    sbSnapshotShipmentsOrigin: String
+    sbSnapshotShipmentsLensId: Int
+    sbSnapshotShipmentsLensType: String
+    sbSnapshotShipmentsTotal: Int
+    sbSnapshotShipmentsAvgDays: Int
+    sbSnapshotShipmentsLT3Days: Int
+    sbSnapshotShipmentsLTE5Days: Int
+    sbSnapshotShipmentsLTE10Days: Int
+    sbSnapshotShipmentsLTE15Days: Int
+    sbSnapshotShipmentsLTE20Days: Int
+    sbSnapshotShipmentsLTE30Days: Int
+    sbSnapshotShipmentsLTE45Days: Int
+    sbSnapshotShipmentsLTE60Days: Int
+    sbSnapshotShipmentsGT60Days: Int
+}

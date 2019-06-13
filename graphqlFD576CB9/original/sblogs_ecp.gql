@@ -1,0 +1,9 @@
+type sblogs_ecp {
+    sblogId: Int
+    sblogEcpId: Int
+    sblogDate: String
+    sblogBy: String
+    sblogIp: String
+    sblogSessionId: String
+    sblogUpdate: String
+}

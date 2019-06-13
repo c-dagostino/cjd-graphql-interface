@@ -1,0 +1,24 @@
+input CreatePaymentCardInput {
+  patientId: Int!
+  doctorId: Int!
+  teamId: Int!
+}
+
+type MarqetaCard {
+  id: String!
+  number: String!
+  state: ReportPaymentCardEnum!
+  exp: String!
+  cvv: String!
+}
+
+input ReportPaymentCardInput {
+  "id is the card token to perform an action against."
+  id: ID!
+  "reason is a free form field for notes"
+  reason: String!
+  "code is the reason code derived from our internal list"
+  code: ReportPaymentCardEnum!
+  "teamId is the team member performing an action against a card"
+  teamId: Int!
+}

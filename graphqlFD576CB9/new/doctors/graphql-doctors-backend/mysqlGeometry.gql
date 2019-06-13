@@ -1,0 +1,10 @@
+type geometry {
+	x: Float!
+	y: Float!
+}
+
+
+input geometryInput {
+	x: Float!
+	y: Float!
+}

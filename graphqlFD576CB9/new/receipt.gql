@@ -1,0 +1,40 @@
+input ReceiptInput {
+    paymentDate: AWSDateTime
+    teamId: Int!
+    doctorId: Int!
+    patientId: Int!
+    faxId: String
+    exam: Float
+    refraction: Float
+    fitting: Float
+    other: Float
+    notes: String
+    discount: Float
+    image: String
+    receiptDate: AWSDateTime
+}
+
+input getReceiptInput {
+    paymentId: Int
+    teamId: Int
+    patientId: Int
+    doctorId: Int
+}             
+
+type Receipt {
+    paymentDate: AWSDateTime
+    TeamMember: sbteammembers
+    Doctor: sbdoctors
+    Fax: Fax
+    Patient: sbpatients
+    exam: Float
+    refraction: Float
+    fitting: Float
+    other: Float
+    notes: String
+    discount: Float
+    total: Float
+    image: String
+    receiptDate: AWSDateTime
+    id: Int
+}

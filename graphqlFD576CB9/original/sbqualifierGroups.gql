@@ -1,0 +1,4 @@
+type sbqualifierGroups {
+    sbqualifierGroupId: Int
+    sbqualifierGroupName: String
+}   

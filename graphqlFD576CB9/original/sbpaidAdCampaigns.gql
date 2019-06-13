@@ -1,0 +1,7 @@
+type sbpaidAdCampaigns {
+    paidAdCampaignId: Int
+    paidAdCampaignDate: String
+    paidAdCampaignGroupId: Int
+    paidAdCampaignSubGroupId: Int
+    paidAdCampaignAmt: Float
+}

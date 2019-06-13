@@ -1,0 +1,7 @@
+type sbautoReports {
+    autoReportId: Int
+    autoReportFirstname: String
+    autoReportLastname: String
+    autoReportEmail: String
+    autoReportPulse: Boolean
+}

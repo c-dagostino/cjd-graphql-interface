@@ -1,0 +1,149 @@
+"Practice model is a physical location of the vision group (business)"
+type Practice {
+  "Primary key of practice"
+  id: Int!
+  "whether we have blocked the practice or not"
+  blocked: Boolean!
+  "preferred partner of sightbox"
+  preferred: Boolean!
+  "is this practice active"
+  closed: Boolean!
+  "are they easily accesible to handicap individuals"
+  handicapAccessible: Boolean!
+  "do they offer a unique care for each patients"
+  personalizedCare: Boolean!
+  "Do they accept new contact lenses"
+  newContacts: Boolean!
+  "street address"
+  address1: String!
+  "secondary field for address, typically suite #"
+  address2: String
+  "fax number for practice"
+  faxNumber: String
+  "city they are in"
+  city: String!
+  "state that they are located in"
+  state: State!
+  "zipcode they reside in"
+  zipcode: String!
+  "The doctor / practice website"
+  website: String
+  "Email used to contact practice"
+  email: AWSEmail
+  "Preferred Method of Contact for practice"
+  notes: String
+  preferredContact: ContactTypes
+  "The work phone to contact the doctor at"
+  workPhone: AWSPhone
+  "Country they are located in"
+  country: Country!
+  location: geometry!
+  Hours: [hours]
+  Doctors: [Doctor]
+  VisionGroups: [VisionGroup]
+  ActivePatients: [sbpatients]
+}
+
+type hours {
+  id: Int
+  day: Int!
+  openTime: String!
+  closeTime: String!
+  timezone: String!
+}
+
+input hoursInput {
+  day: Int!
+  openTime: String!
+  closeTime: String!
+  timezone: String!
+}
+
+"Payload to create a practice with. This is typically a location."
+input createPracticeInput {
+  "Is this practice blocked"
+  blocked: Boolean!
+  "Is this practice perferred"
+  preferred: Boolean!
+  "Is this practice closed"
+  closed: Boolean
+  "Is this practice handicap accessible"
+  handicapAccessible: Boolean
+  "Is this a good practice that personalizes the experience"
+  personalizedCare: Boolean
+  "Is this a good practice for new contact lense wearers"
+  newContacts: Boolean
+  "Street address of the location"
+  address1: String!
+  "building number of the location"
+  address2: String
+  "city that the practice is located in"
+  city: String!
+  "State that the practice is located in"
+  state: State!
+  "zipcode that the practice is located in"
+  zipcode: String!
+  "Country that the practice is located in. Typically US"
+  country: Country!
+  "Hours of operation for the clinic"
+  hours: [hoursInput]
+  "Doctors that practice at this location"
+  doctors: [createDoctorInput]
+  "The work phone to contact the doctor at"
+  workPhone: AWSPhone
+  "The fax number to contact the doctor at"
+  faxNumber: String!
+  "The doctor / clinic website"
+  website: String
+  "Email used to contact clinic"
+  email: AWSEmail
+  "Preferred Method of Contact for clinic"
+  preferredContact: ContactTypes
+  "Notes about the practice/doctors"
+  notes: String
+}
+
+"payload used to update a practice"
+input updatePracticeInput {
+  "Is this practice blocked"
+  blocked: Boolean
+  "Is this practice perferred"
+  preferred: Boolean
+  "Is this practice closed"
+  closed: Boolean
+  "Is this practice handicap accessible"
+  handicapAccessible: Boolean
+  "Is this a good practice that personalizes the experience"
+  personalizedCare: Boolean
+  "Is this a good practice for new contact lense wearers"
+  newContacts: Boolean
+  "Street address of the location"
+  address1: String
+  "building number of the location"
+  address2: String
+  "city that the practice is located in"
+  city: String
+  "State that the practice is located in"
+  state: State
+  "zipcode that the practice is located in"
+  zipcode: String
+  "Country that the practice is located in. Typically US"
+  country: Country
+  "The work phone to contact the doctor at"
+  workPhone: AWSPhone
+  "The fax number to contact the doctor at"
+  faxNumber: String
+  "The doctor / clinic website"
+  website: String
+  "Email used to contact clinic"
+  email: AWSEmail
+  "Preferred Method of Contact for clinic"
+  preferredContact: ContactTypes
+  "Notes about the practice/doctors"
+  notes: String
+}
+
+input linkPracticeToVisionGroupInput {
+  practiceId: Int!
+  visionGroupId: Int!
+}

@@ -1,0 +1,7 @@
+type sbpromoNetworks {
+    promoNetworkId: Int 
+    promoClassId: Int
+    promoNetworkName: String 
+    promoNetworkDesc: String
+    promoNetworkInactive: Boolean
+}  

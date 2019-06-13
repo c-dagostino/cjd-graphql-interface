@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing All Packages
+      - npm i
+  build:
+    commands:
+      - echo "Testing the schema"
+      - npm run graphql:build-schema
+      - npm run graphql:validate
+  post_build:
+    commands:
+      - echo Build completed on `date`

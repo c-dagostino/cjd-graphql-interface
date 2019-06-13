@@ -1,0 +1,79 @@
+"A latitude/longitude coordinate pair"
+type LatitudeLongitude {
+  "The latitude represented by decimal degrees"
+  latitude: Float!
+  "The latitude represented by decimal degrees"
+  longitude: Float!
+}
+
+"Input for a latitude longitude coordinate pair"
+input LatitudeLongitudeInput {
+  "The latitude represented by decimal degrees"
+  latitude: Float!
+  "The latitude represented by decimal degrees"
+  longitude: Float!
+}
+
+"Results from fetching a timezone based off of geolocation."
+type TimezoneResults {
+  "The offset for daylight-savings time in seconds"
+  dstOffset: Int!
+  "The offset from UTC in seconds"
+  rawOffset: Int!
+  "A string containing the ID of the time zone, such as America/Los_Angeles"
+  timeZoneId: String!
+  "The long form name of the time zone, such as Pacific Daylight Time"
+  timeZoneName: String!
+  "The timezone mapped to its Sightbox equivalent (if applicable)"
+  sbTimezone: ExamTimezone
+}
+
+"input for queries searching for timezone information"
+input TimezoneQueryInput {
+  "The latitude of the point for which to search timezone information."
+  latitude: Float!
+  "The longitude of the point for which to search timezone information."
+  longitude: Float!
+}
+
+"Input for queries searching within a distance radius of a location"
+input LocationRadiusSearchInput {
+  "The location at the center of the radius search"
+  location: LatitudeLongitudeInput!
+  "The distance radius used to search within"
+  distance: Int!
+  "A page number for paginated results"
+  page: Int
+  "The maximum amount of results to return from the search"
+  limit: Int
+}
+
+"A result from searching for practices within a distance radius of a location."
+type PracticeRadiusSearchResults {
+  "The practice that was found within the distance radius."
+  practice: Practice!
+  "The number of exams we have scheduled at this practice."
+  totalExams: Int!
+  "The average cost of an exam at the practice."
+  averageExamCost: Int
+  "The distance the practice is from the origin location."
+  distance: GoogleMapsDistanceResults
+  "The estimated time it takes to travel from the origin location to the practice."
+  duration: GoogleMapsDurationResults
+}
+
+"Results representing the distance between two locations."
+type GoogleMapsDistanceResults {
+  "The human readable distance in miles."
+  text: String!
+  "The distance in meters."
+  value: Int!
+}
+
+"Results representing travel time between two locations."
+type GoogleMapsDurationResults {
+  "Human readable travel time. I.e. 15 hours 9 mins"
+  text: String!
+  "The travel time in seconds."
+  value: Int!
+}

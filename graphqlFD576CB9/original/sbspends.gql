@@ -1,0 +1,7 @@
+type sbspends {
+    spendid: Int
+    spendDate: String
+    spendChannelId: Int
+    spendAmt: Float
+    spendNotes: String
+}

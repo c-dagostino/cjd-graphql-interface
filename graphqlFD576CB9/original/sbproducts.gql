@@ -1,0 +1,21 @@
+type sbproducts {
+    sbproductID: Int
+    sbproductBrandID: Int
+    sbproductWear: String
+    sbproductPerPack: Int
+    sbproductColor: Boolean
+    sbproductSeq: Int
+    sbproductTitle: String
+    sbproductDesc: String
+    sbproductDBTable: String
+    sbproductImg: String
+    sbproductImgThumb: String
+    sbproductType: String
+    sbproductTypeLabel: String
+    sbproductURL: String
+    sbproductUPP: Boolean
+    sbproductPrice: Float
+    sbproductPrice1800: Float
+    sbproductPriceOOGP: Float
+    sbproductHide: Boolean
+}

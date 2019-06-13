@@ -1,0 +1,8 @@
+type sbpatientCancelHistory {
+    sbpatientCancelHistoryId: Int
+    sbpatientId: Int
+    sbpatientCancelReasonId: Int
+    sbpatientCancelDetails: String
+    sbpatientCancelDate: String
+    sbTeamMemberId: Int
+  }

@@ -1,0 +1,5 @@
+type sbpromoClasses {
+    promoClassId: Int 
+    promoClassName: String 
+    promoClassInactive: Boolean
+}

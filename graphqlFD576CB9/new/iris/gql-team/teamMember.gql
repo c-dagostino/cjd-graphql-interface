@@ -1,0 +1,47 @@
+"Represents a sightbox team member"
+type TeamMember {
+  "Primary key to identify the teamMember by"
+  id: Int
+  "First name of the teaam member"
+  firstName: String
+  "Middle name of the team member"
+  middleName: String
+  "Last name of the team member"
+  lastName: String
+  "Title of the team member"
+  title: String
+  "Email of the team member"
+  email: AWSEmail
+  "Mobile phone of the team member"
+  mobile: AWSPhone
+  "Work mobile phone of the team member"
+  workMobile: AWSPhone
+  "When were they created"
+  createdAt: AWSDateTime
+  "When was the last time this record was updated"
+  updatedAt: AWSDateTime
+  #"The patients this user has interacted with"
+  #Patients: [sbpatients]!
+  #"Faxes this user has processed"
+  #ProcessedFaxes: [Fax]!
+  #"Faxes this user has verified"
+  #VerifiedFaxes: [Fax]!
+}
+
+"Represents a team member field for creation"
+input TeamMemberInput {
+  "First name of the teaam member"
+  firstName: String
+  "Middle name of the team member"
+  middleName: String
+  "Last name of the team member"
+  lastName: String
+  "Title of the team member"
+  title: String
+  "Email of the team member"
+  email: AWSEmail
+  "Mobile phone of the team member"
+  mobile: AWSPhone
+  "Work mobile phone of the team member"
+  workMobile: AWSPhone
+}

@@ -1,0 +1,25 @@
+"Input for updating subscriber email and password"
+input UpdateSubscriberCredentialsInput {
+  currentEmail: AWSEmail
+  currentPassword: String
+  newEmail: AWSEmail
+  newPassword: String
+}
+
+"Response from updating a subscriber's credentails"
+type UpdateSubscriberCredentialsResponse {
+  success: Boolean!
+  message: String
+}
+
+"Input for creating subscriber account"
+input CreateSubscriberAccountInput {
+  email: AWSEmail!
+  password: String!
+}
+
+"Response from creating a subscriber"
+type CreateSubscriberAccountResponse {
+  success: Boolean!
+  message: String
+}

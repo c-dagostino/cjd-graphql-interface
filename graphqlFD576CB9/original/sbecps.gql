@@ -1,0 +1,18 @@
+type sbecps {
+    doctorId: Int
+    ecpId: Int
+    ecpFirstname: String
+    ecpLastname: String
+    ecpEmail: String
+    ecpPassword: String
+    ecpActive: Boolean
+    ecpLastSignIn: String
+    ecpUserAgent: String
+    ecpBrowserName: String
+    ecpBrowserVersion: String
+    ecpEngineName: String
+    ecpEngineVersion: String
+    ecpPlatformName: String
+    ecpPlatformType: String
+    ecpPlatformVersion: String
+}

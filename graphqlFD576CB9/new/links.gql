@@ -1,0 +1,8 @@
+input linkPatientDoctorInput {
+  "id of the patient we are linking from"
+  patientId: Int!
+  "id of the doctor we are linking to"
+  doctorId: Int!
+  "the id of the practice that the doctor and patient were both at"
+  practiceId: Int!
+}

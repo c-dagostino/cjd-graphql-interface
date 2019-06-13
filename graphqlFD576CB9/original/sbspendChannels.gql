@@ -1,0 +1,5 @@
+type sbspendChannels {
+    spendChannelId: Int
+    spendChannelName: String
+    spendChannelHidden: Boolean
+}

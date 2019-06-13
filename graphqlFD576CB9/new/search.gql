@@ -1,0 +1,17 @@
+type SearchPayload {
+	total: Int!
+	results: [SearchResults]!
+	nextToken: SearchNextPage
+}
+
+type SearchNextPage {
+	query: String!
+	limit: Int!
+	page: Int!
+}
+
+input SearchInput {
+	query: String!
+	page: Int
+	limit: Int
+}

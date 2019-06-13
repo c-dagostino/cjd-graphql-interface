@@ -1,0 +1,4 @@
+type QueryResults {
+  results: [QueryValueResults]
+  nextToken: String
+}

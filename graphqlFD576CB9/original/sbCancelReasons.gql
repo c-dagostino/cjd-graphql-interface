@@ -1,0 +1,7 @@
+type sbCancelReasons {
+    sbCancelReasonId: Int
+    sbCancelReasonGroupId: Int
+    sbCancelReason: String 
+    sbCancelReasonOrderNum: Int
+    sbCancelReasonInactive: Boolean
+}

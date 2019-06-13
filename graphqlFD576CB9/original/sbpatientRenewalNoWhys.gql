@@ -1,0 +1,5 @@
+type sbpatientRenewalNoWhys {
+    sbpatientRenewalNoWhyId: Int
+    sbpatientRenewalNoWhyLabel: String
+    sbpatientRenewalNoWhyLabelHidden: Boolean
+}

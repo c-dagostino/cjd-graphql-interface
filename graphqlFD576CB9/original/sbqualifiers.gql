@@ -1,0 +1,12 @@
+type sbqualifiers {
+    sbqualifierId: Int
+    sbqualifierGroupId: Int
+    sbqualifierDate: String
+    sbqualifierResponse: String
+    sbqualifierRemindMonth: String
+    sbqualifierRemindEmail: String
+    sbqualifierMobile: Boolean
+    sbqualifierIP: String
+    sbqualifierBrowserAgent: String
+    sbqualifierToken: String
+}

@@ -1,0 +1,9 @@
+type sbproductBrands {
+    sbproductBrandID: Int
+    sbproductBrandTitle: String
+    sbproductBrandDesc: String
+    sbproductBrandGridValue: String
+    sbproductBrandSeq: Int
+    sbproductBrandRGB: String
+    sbproductBrandHide: Boolean
+}

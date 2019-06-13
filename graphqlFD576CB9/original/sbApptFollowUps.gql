@@ -1,0 +1,11 @@
+type sbApptFollowUps {
+    sbApptFollowUpId: Int
+    sbApptFollowUpAdded: String 
+    patientid: Int
+    doctorid: Int
+    teamid: Int
+    sbApptFollowUpDate: String 
+    sbApptFollowUpTimeZone: String
+    sbApptFollowUpReason: String
+    sbApptFollowUpNotes: String
+}

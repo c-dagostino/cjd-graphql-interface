@@ -1,0 +1,4 @@
+type sbteamMemberDepts {
+    teamMemberDeptId: Int 
+    teamMemberDeptName: String
+}

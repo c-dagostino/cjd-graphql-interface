@@ -1,0 +1,10 @@
+type sbdoctorReviews {
+    sbdoctorReviewId: Int
+    sbdoctorId: Int
+    sbpatientId: Int
+    sbpatientRating: Int
+    sbpatientReview: String
+    sbteammemberId: Int
+    sbteamRating: Int
+    sbteamReview: String
+}

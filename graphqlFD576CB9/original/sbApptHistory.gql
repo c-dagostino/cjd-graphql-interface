@@ -1,0 +1,12 @@
+type sbApptHistory {
+    sbApptHistoryId: Int
+    patientid: Int
+    doctorid: Int
+    sbApptDate: String
+    sbApptTimeZone: String
+    sbApptNotes: String
+    sbApptStatus: String
+    teamid: Int
+    lastUpdated: String
+    lastUpdatedIp: String
+}

@@ -1,0 +1,5 @@
+type sbRxImageArchives {
+    sbRxImageArchiveId: Int
+    sbpatientId: Int
+    sbRxImage: String
+}

@@ -1,0 +1,14 @@
+type sbinvestors {
+    sbinvestorid: Int
+    sbinvestorgroupid: Int
+    sbinvestor_firstname: String
+    sbinvestor_lastname: String
+    sbinvestor_email: String
+    sbinvestor_phone: String
+    sbinvestor_company: String
+    sbinvestor_location: String
+    sbinvestor_notes: String
+    sbinvestor_investor: Boolean
+    sbinvestor_active: Boolean
+    sbinvestor_lastoutreach: String
+}

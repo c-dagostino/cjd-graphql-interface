@@ -1,0 +1,58 @@
+input UpdateFaxInput {
+	state: FaxState
+	status: FaxStatus
+	type: FaxType
+	patientId: Int
+	doctorId: Int
+	practiceId: Int
+	verifiedTeamId: Int
+	processorTeamId: Int
+	settings: UpdateSettingsInput
+}
+
+input RejectFaxInput {
+	reason: FaxRejection!
+	id: ID!
+}
+
+input UpdateSettingsInput {
+	lock: Boolean!
+	archive: Boolean!
+	processingPriority: Boolean!
+}
+
+input LinkFaxDoctorInput {
+	id: String!
+	doctorId: Int!
+}
+
+input LinkFaxPatientInput {
+	id: String!
+	patientId: Int!
+}
+
+input LinkFaxPracticeInput {
+	id: String!
+	practiceId: Int!
+}
+
+input createFaxInput {
+	id: String!
+	inbound: Boolean!
+	from: String!
+	to: String!
+	link: String
+	status: FaxStatus!
+}
+
+input getFaxesInput {
+	startDate: AWSDateTime!
+	endDate: AWSDateTime!
+	rejected: Boolean
+	rejectType: FaxRejection
+	state: FaxState
+	patientId: Int
+	pending: Boolean
+	count: Int
+	nextToken: String
+}

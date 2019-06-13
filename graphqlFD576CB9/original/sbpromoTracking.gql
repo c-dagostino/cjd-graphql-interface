@@ -1,0 +1,7 @@
+type sbpromoTracking {
+    promoTrackingId: Int
+    promoCodeId: Int
+    promoPatientId: Int
+    promoTrackingDate: String
+    promoTrackingTransactionId: Int
+}

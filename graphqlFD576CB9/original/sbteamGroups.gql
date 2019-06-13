@@ -1,0 +1,5 @@
+type sbteamGroups {
+    groupId: Int 
+    groupName: String
+    groupDescription: String
+}

@@ -1,0 +1,2 @@
+union SearchResults = Practice | Doctor | sbpatients
+union QueryValueResults = Fax

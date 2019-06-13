@@ -1,0 +1,34 @@
+type Fax {
+    id: String
+    state: FaxState
+    inbound: Boolean
+    status: FaxStatus
+    settings: settings
+    from: String
+    to: String
+    type: FaxType
+    rejectType: FaxRejection
+    link: String
+    viewPdf: String
+    patientId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    doctorId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    practiceId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    teamId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    verifiedTeamId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    processorTeamId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    createdAt: String
+    updatedAt: String
+    Patient: sbpatients
+    Doctor: Doctor
+    Practice: Practice
+    Events: [Event!]
+    Receipt: Receipt
+    GetPracticeByFax: [Practice]
+}
+
+type settings {
+    lock: Boolean
+    archive: Boolean
+    processingPriority: Boolean
+}
+

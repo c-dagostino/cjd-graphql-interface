@@ -1,0 +1,983 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Sightbox GraphQL Interface
+Resources:
+  graphqlFD576CB9:
+    Type: AWS::AppSync::GraphQLApi
+    Properties:
+      Name: !Sub
+        - ${ResourceName} From Stackery Stack ${StackeryStackTagName} Environment ${StackeryEnvironmentTagName}
+        - ResourceName: graphqlFD576CB9
+      AuthenticationType: API_KEY
+      LogConfig:
+        FieldLogLevel: ERROR
+        CloudWatchLogsRoleArn: !GetAtt graphqlFD576CB9LogsRole.Arn
+  graphqlFD576CB9Schema:
+    Type: AWS::AppSync::GraphQLSchema
+    Properties:
+      ApiId: !GetAtt graphqlFD576CB9.ApiId
+      DefinitionS3Location: graphqlFD576CB9/schema.graphql
+  graphqlFD576CB9LogsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: appsync.amazonaws.com
+          Action: sts:AssumeRole
+      RoleName: !Sub ${AWS::StackName}-graphqlFD576CB9-logging
+      Policies:
+        - PolicyName: Log
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource:
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/appsync/apis/*
+                  - !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/appsync/apis/*:log-stream:*
+  Aurora:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      AvailabilityZones:
+        - !Select
+          - 0
+          - !GetAZs ''
+        - !Select
+          - 1
+          - !GetAZs ''
+      BackupRetentionPeriod: 14
+      DatabaseName: !Ref StackeryEnvConfigmysqlDatabaseAsString
+      DBSubnetGroupName: !Ref AuroraSubnetGroup
+      Engine: aurora
+      EngineMode: serverless
+      MasterUsername: !Ref StackeryEnvConfigmysqlUserAsString
+      MasterUserPassword: !Ref StackeryEnvConfigmysqlPasswordAsString
+      StorageEncrypted: true
+      VpcSecurityGroupIds:
+        - !Ref AuroraSecurityGroup
+      ScalingConfiguration:
+        AutoPause: false
+        MinCapacity: 2
+        MaxCapacity: 256
+  AuroraSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      SubnetIds:
+        - !If
+          - VirtualNetworkUseExistingResource
+          - !GetAtt VirtualNetworkExistingResource.PrivateSubnet1
+          - !Ref VirtualNetworkPrivateSubnet1
+        - !If
+          - VirtualNetworkUseExistingResource
+          - !GetAtt VirtualNetworkExistingResource.PrivateSubnet2
+          - !Ref VirtualNetworkPrivateSubnet2
+      DBSubnetGroupDescription: !Sub
+        - Stackery Stack ${StackeryStackTagName} Environment ${StackeryEnvironmentTagName} Database ${ResourceName} Subnet Group
+        - ResourceName: Aurora
+  AuroraSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Database Security Group
+      SecurityGroupIngress:
+        CidrIp: 0.0.0.0/0
+        FromPort: 3306
+        IpProtocol: tcp
+        ToPort: 3306
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stackery Stack ${StackeryStackTagName} Environment ${StackeryEnvironmentTagName} Database ${ResourceName} VPC Security Group
+            - ResourceName: Aurora
+      VpcId: !If
+        - VirtualNetworkUseExistingResource
+        - !Ref VirtualNetworkExistingResource
+        - !Ref VirtualNetwork
+  VirtualNetwork:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stack ${StackTagName} Environment ${EnvironmentTagName} Virtual Network ${ResourceName}
+            - ResourceName: vpc
+    Metadata:
+      StackeryName: vpc
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet1:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs ''
+      CidrBlock: !Select
+        - 0
+        - !Cidr
+          - 10.0.0.0/16
+          - 4
+          - 14
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stack ${StackTagName} Environment ${EnvironmentTagName} Virtual Network ${ResourceName} Private Subnet 1
+            - ResourceName: vpc
+      VpcId: !Ref VirtualNetwork
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet2:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs ''
+      CidrBlock: !Select
+        - 1
+        - !Cidr
+          - 10.0.0.0/16
+          - 4
+          - 14
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stack ${StackTagName} Environment ${EnvironmentTagName} Virtual Network ${ResourceName} Private Subnet 2
+            - ResourceName: vpc
+      VpcId: !Ref VirtualNetwork
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPublicSubnet1:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs ''
+      CidrBlock: !Select
+        - 2
+        - !Cidr
+          - 10.0.0.0/16
+          - 4
+          - 14
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stack ${StackTagName} Environment ${EnvironmentTagName} Virtual Network ${ResourceName} Public Subnet 1
+            - ResourceName: vpc
+      VpcId: !Ref VirtualNetwork
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPublicSubnet2:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs ''
+      CidrBlock: !Select
+        - 3
+        - !Cidr
+          - 10.0.0.0/16
+          - 4
+          - 14
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stack ${StackTagName} Environment ${EnvironmentTagName} Virtual Network ${ResourceName} Public Subnet 2
+            - ResourceName: vpc
+      VpcId: !Ref VirtualNetwork
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet1NatGatewayEIP:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet1NatGateway:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt VirtualNetworkPrivateSubnet1NatGatewayEIP.AllocationId
+      SubnetId: !Ref VirtualNetworkPublicSubnet1
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet1RouteTable:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stack ${StackTagName} Environment ${EnvironmentTagName} Virtual Network ${ResourceName} Private Subnet 1 Route Table
+            - ResourceName: vpc
+      VpcId: !Ref VirtualNetwork
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet1NatGatewayRoute:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref VirtualNetworkPrivateSubnet1NatGateway
+      RouteTableId: !Ref VirtualNetworkPrivateSubnet1RouteTable
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet1RouteTableAssociation:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref VirtualNetworkPrivateSubnet1RouteTable
+      SubnetId: !Ref VirtualNetworkPrivateSubnet1
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet2NatGatewayEIP:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet2NatGateway:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt VirtualNetworkPrivateSubnet2NatGatewayEIP.AllocationId
+      SubnetId: !Ref VirtualNetworkPublicSubnet2
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet2RouteTable:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stack ${StackTagName} Environment ${EnvironmentTagName} Virtual Network ${ResourceName} Private Subnet 2 Route Table
+            - ResourceName: vpc
+      VpcId: !Ref VirtualNetwork
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet2NatGatewayRoute:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref VirtualNetworkPrivateSubnet2NatGateway
+      RouteTableId: !Ref VirtualNetworkPrivateSubnet2RouteTable
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPrivateSubnet2RouteTableAssociation:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref VirtualNetworkPrivateSubnet2RouteTable
+      SubnetId: !Ref VirtualNetworkPrivateSubnet2
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPublicSubnetsInternetGateway:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stack ${StackTagName} Environment ${EnvironmentTagName} Virtual Network ${ResourceName} Public Subnets Internet Gateway
+            - ResourceName: vpc
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPublicSubnetsInternetGatewayAttachment:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref VirtualNetworkPublicSubnetsInternetGateway
+      VpcId: !Ref VirtualNetwork
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPublicSubnetsRouteTable:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stack ${StackTagName} Environment ${EnvironmentTagName} Virtual Network ${ResourceName} Public Subnets Route Table
+            - ResourceName: vpc
+      VpcId: !Ref VirtualNetwork
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPublicSubnetsInternetGatewayRoute:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref VirtualNetworkPublicSubnetsInternetGateway
+      RouteTableId: !Ref VirtualNetworkPublicSubnetsRouteTable
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPublicSubnet1RouteTableAssociation:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref VirtualNetworkPublicSubnetsRouteTable
+      SubnetId: !Ref VirtualNetworkPublicSubnet1
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkPublicSubnet2RouteTableAssociation:
+    Metadata:
+      StackeryManaged: true
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref VirtualNetworkPublicSubnetsRouteTable
+      SubnetId: !Ref VirtualNetworkPublicSubnet2
+    Condition: VirtualNetworkCreateNewResource
+  VirtualNetworkExistingResource:
+    Type: Custom::StackeryExistingResource
+    Properties:
+      ServiceToken: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:stackery-agent-commander
+      Type: virtualNetwork
+      Data: !Ref EnvConfigvpcAsString
+    Condition: VirtualNetworkUseExistingResource
+  migrator:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-migrator
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: Migrator
+      CodeUri: src/migrator
+      Handler: index.handler
+      Runtime: nodejs8.10
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - AWSLambdaENIManagementAccess
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:/${EnvironmentTagName}/*
+      VpcConfig:
+        SecurityGroupIds:
+          - !If
+            - VirtualNetworkUseExistingResource
+            - !GetAtt VirtualNetworkExistingResource.DefaultSecurityGroup
+            - !GetAtt VirtualNetwork.DefaultSecurityGroup
+        SubnetIds:
+          - !If
+            - VirtualNetworkUseExistingResource
+            - !GetAtt VirtualNetworkExistingResource.PrivateSubnet1
+            - !Ref VirtualNetworkPrivateSubnet1
+          - !If
+            - VirtualNetworkUseExistingResource
+            - !GetAtt VirtualNetworkExistingResource.PrivateSubnet2
+            - !Ref VirtualNetworkPrivateSubnet2
+      Layers:
+        - !Ref EnvConfigormutilslayerAsString
+      Environment:
+        Variables:
+          DB_ADDRESS: !GetAtt Aurora.Endpoint.Address
+          DB_PORT: !GetAtt Aurora.Endpoint.Port
+          DB_ARN: !Sub arn:aws:rds:${AWS::Region}:${AWS::AccountId}:db:${Aurora}
+          DB_USER: !Ref EnvConfigmysqlUserAsString
+          DB_DB: !Ref EnvConfigmysqlDatabaseAsString
+          SECRETS_NAMESPACE: !Sub /${EnvironmentTagName}/
+          ENVIRONMENT: !Sub ${EnvironmentTagName}
+          MSSQL_ADDRESS: !Ref EnvConfigmssqlHostAsString
+          MSSQL_PORT: !Ref EnvConfigmssqlPortAsString
+          MSSQL_DB: !Ref EnvConfigmssqlDatabaseAsString
+          MSSQL_USER: !Ref EnvConfigmssqlUserAsString
+    Metadata:
+      StackeryName: Migrator
+  slackFunc:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-slackFunc
+      Description: !Sub
+        - Stack ${StackTagName} Environment ${EnvironmentTagName} Function ${ResourceName}
+        - ResourceName: slackFunc
+      CodeUri: src/slackFunc
+      Handler: index.handler
+      Runtime: nodejs8.10
+      MemorySize: 3008
+      Timeout: 30
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+      Events:
+        shippingTopic:
+          Type: SNS
+          Properties:
+            Topic: !Ref shippingTopic
+    Metadata:
+      StackeryName: slackFunc
+  shippingTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${AWS::StackName}-shippingTopic
+    Metadata:
+      StackeryName: shippingTopic
+  Bastion:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Metadata:
+      StackeryType: bastion
+      StackeryName: AuroraBastion
+    Properties:
+      LaunchConfigurationName: !Ref BastionLaunchConfiguration
+      MaxSize: 2
+      MinSize: 1
+      DesiredCapacity: 1
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stack ${StackTagName} Environment ${EnvironmentTagName} Bastion ${ResourceName} Instance
+            - ResourceName: AuroraBastion
+          PropagateAtLaunch: true
+      VPCZoneIdentifier:
+        - !If
+          - VirtualNetworkUseExistingResource
+          - !GetAtt VirtualNetworkExistingResource.PublicSubnet1
+          - !Ref VirtualNetworkPublicSubnet1
+        - !If
+          - VirtualNetworkUseExistingResource
+          - !GetAtt VirtualNetworkExistingResource.PublicSubnet2
+          - !Ref VirtualNetworkPublicSubnet2
+    UpdatePolicy:
+      AutoScalingRollingUpdate:
+        MinInstancesInService: 1
+    Condition: CreateBastionResources
+  BastionIAMRole:
+    Type: AWS::IAM::Role
+    Condition: CreateBastionResources
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: ec2.amazonaws.com
+          Action: sts:AssumeRole
+      RoleName: !Sub ${AWS::StackName}-Bastion
+      Policies:
+        - PolicyName: BastionPermissions
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudwatch:PutMetricData
+                  - cloudwatch:GetMetricStatistics
+                  - cloudwatch:ListMetrics
+                  - ec2:DescribeTags
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:DescribeLogStreams
+                  - logs:PutLogEvents
+                Resource:
+                  - arn:aws:logs:*:*:log-group:/stackery/bastion/*
+                  - arn:aws:logs:*:*:log-group:/stackery/bastion/*:log-stream:*
+  BastionIAMInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Condition: CreateBastionResources
+    Properties:
+      Roles:
+        - !Ref BastionIAMRole
+  BastionInstancesSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Condition: CreateBastionResources
+    Properties:
+      GroupDescription: Bastion Instances Security Group
+      SecurityGroupIngress:
+        - CidrIp: 65.49.65.6/32
+          IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: '-1'
+      Tags:
+        - Key: Name
+          Value: !Sub
+            - Stack ${StackTagName} Environment ${EnvironmentTagName} Bastion ${ResourceName} Instances Security Group
+            - ResourceName: AuroraBastion
+      VpcId: !If
+        - VirtualNetworkUseExistingResource
+        - !Ref VirtualNetworkExistingResource
+        - !Ref VirtualNetwork
+  BastionLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Condition: CreateBastionResources
+    Properties:
+      IamInstanceProfile: !Ref BastionIAMInstanceProfile
+      ImageId: !Ref AmazonLinux2ImageId
+      InstanceType: t2.nano
+      SecurityGroups:
+        - !Ref BastionInstancesSecurityGroup
+      UserData: !Base64
+        Fn::Sub:
+          - |-
+            Content-Type: multipart/mixed; boundary="==BOUNDARY=="
+            MIME-Version: 1.0
+
+            --==BOUNDARY==
+            MIME-Version: 1.0
+            Content-Type: text/x-shellscript
+
+            #!/bin/bash
+            # Install awslogs, the jq JSON parser, and cfn-signal stuff
+            yum install -y awslogs jq
+
+            # Inject the CloudWatch Logs configuration file contents
+            cat > /etc/awslogs/awslogs.conf <<- EOF
+            [general]
+            state_file = /var/lib/awslogs/agent-state
+
+            [/var/log/dmesg]
+            file = /var/log/dmesg
+            log_group_name = /${AWS::StackName}-${ResourceId}/dmesg
+            log_stream_name = {instance_id}
+
+            [/var/log/messages]
+            file = /var/log/messages
+            log_group_name = /${AWS::StackName}-${ResourceId}/messages
+            log_stream_name = {instance_id}
+            datetime_format = %b %d %H:%M:%S
+
+            [/var/log/secure]
+            file = /var/log/secure
+            log_group_name = /${AWS::StackName}-${ResourceId}/secure
+            log_stream_name = {instance_id}
+
+            [/var/log/auth.log]
+            file = /var/log/auth.log
+            log_group_name = /${AWS::StackName}-${ResourceId}/auth.log
+            log_stream_name = {instance_id}
+
+            EOF
+
+            exec 2>>/var/log/cloudwatch-logs-start.log
+            set -x
+
+            # Grab the instance id ARN from instance metadata
+            instance_id=$(curl -s http://169.254.169.254/latest/meta-data/instance-id)
+
+            # Replace the instance ID placeholders with the actual values
+            sed -i -e "s/{instance_id}/$instance_id/g" /etc/awslogs/awslogs.conf
+
+            service awslogs start
+            chkconfig awslogs on
+
+            ########################################################################
+            # Create user logins and add their ssh key
+            ########################################################################
+            echo '${SSHKeys}' > ~ec2-user/users.json
+            filename="user.keys"
+            jq -r 'to_entries[] | "\(.key) \(.value)"' ~ec2-user/users.json > "$filename"
+
+            while read -r user key
+            do
+              echo "Adding user: $user"
+              useradd -m $user
+              homedir=$( getent passwd "$user" | cut -d: -f6 )
+              cd $homedir
+              mkdir .ssh
+              chmod 700 .ssh
+              chown $user:$user .ssh
+              echo "$key" >> .ssh/authorized_keys
+              chmod 600 .ssh/authorized_keys
+              chown $user:$user .ssh/authorized_keys
+
+            done < "$filename"
+
+            rm "$filename"
+            rm ~ec2-user/users.json
+
+            --==BOUNDARY==
+            MIME-Version: 1.0
+            Content-Type: text/x-shellscript
+
+            #!/bin/bash
+            # Set the region to send CloudWatch Logs data to (the region where the instance is located)
+            region=$(curl 169.254.169.254/latest/meta-data/placement/availability-zone | sed s'/.$//')
+            sed -i -e "s/region = us-east-1/region = $region/g" /etc/awslogs/awscli.conf
+
+            --==BOUNDARY==
+          - SSHKeys: !Ref EnvConfigsshBastionAsString
+            ResourceId: Bastion
+  Items:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: itemId
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: itemId
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-Items
+    Metadata:
+      StackeryName: Items
+  ItemLogs:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: itemId
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: itemId
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-ItemLogs
+    Metadata:
+      StackeryName: ItemLogs
+  GreenMountainUps:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-GreenMountainUps
+    Metadata:
+      StackeryName: GreenMountainUps
+  Orders:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: orderId
+          AttributeType: S
+        - AttributeName: orderState
+          AttributeType: S
+        - AttributeName: supplier
+          AttributeType: S
+        - AttributeName: submissionAttempts
+          AttributeType: N
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: orderId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: status-by-supplier
+          KeySchema:
+            - AttributeName: orderState
+              KeyType: HASH
+            - AttributeName: supplier
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: status-by-attempts
+          KeySchema:
+            - AttributeName: orderState
+              KeyType: HASH
+            - AttributeName: submissionAttempts
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-Orders
+    Metadata:
+      StackeryName: Orders
+  EventLogs:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-EventLogs
+    Metadata:
+      StackeryName: EventLogs
+  Edis:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: interchange
+          AttributeType: S
+        - AttributeName: orderId
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: interchange
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-Edis
+      GlobalSecondaryIndexes:
+        - IndexName: orderId-index
+          KeySchema:
+            - AttributeName: orderId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+    Metadata:
+      StackeryName: Edis
+  EdiLogs:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: interchange
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: interchange
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-EdiLogs
+    Metadata:
+      StackeryName: EdiLogs
+  Ups:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: trackingNumber
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: trackingNumber
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-Ups
+    Metadata:
+      StackeryName: Ups
+  UpsLogs:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: trackingNumber
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: trackingNumber
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-UpsLogs
+    Metadata:
+      StackeryName: UpsLogs
+  OrderLogs:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: orderId
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: orderId
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-OrderLogs
+    Metadata:
+      StackeryName: OrderLogs
+  Interchange:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${AWS::StackName}-Interchange
+    Metadata:
+      StackeryName: Interchange
+Parameters:
+  StackeryStackTagName:
+    Type: String
+    Description: Stack Name (injected by Stackery at deployment time)
+  StackeryEnvironmentTagName:
+    Type: String
+    Description: Environment Name (injected by Stackery at deployment time)
+  StackTagName:
+    Type: String
+    Description: Stack Name (injected by Stackery at deployment time)
+  EnvironmentTagName:
+    Type: String
+    Description: Environment Name (injected by Stackery at deployment time)
+  EnvConfigvpcAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/vpc
+  StackeryEnvConfigmysqlUserAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /Stackery/Environments/<StackeryEnvId>/Config/mysqlUser
+  StackeryEnvConfigmysqlDatabaseAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /Stackery/Environments/<StackeryEnvId>/Config/mysqlDatabase
+  StackeryEnvConfigmysqlPasswordAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /Stackery/Environments/<StackeryEnvId>/Config/mysqlPassword
+  EnvConfigormutilslayerAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/orm_utils_layer
+  EnvConfigmysqlDatabaseAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/mysqlDatabase
+  EnvConfigmysqlUserAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/mysqlUser
+  AmazonLinux2ImageId:
+    Type: AWS::EC2::Image::Id
+    Description: Latest Amazon Linux 2 AMI ID (injected by Stackery at deployment time)
+  EnvConfigsshBastionAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/sshBastion
+  EnvConfigmssqlHostAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/mssqlHost
+  EnvConfigmssqlPortAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/mssqlPort
+  EnvConfigmssqlDatabaseAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/mssqlDatabase
+  EnvConfigmssqlUserAsString:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /<EnvironmentName>/mssqlUser
+Outputs:
+  GraphQLApiID:
+    Description: The App ID of the AppSync GraphQL endpoint.
+    Value: !GetAtt graphqlFD576CB9.ApiId
+    Export:
+      Name: !Sub graphql-${StackeryEnvironmentTagName}-ApiId
+  GraphQLApiEndpoint:
+    Description: The URL for the AppSync GraphQL endpoint.
+    Value: !GetAtt graphqlFD576CB9.GraphQLUrl
+    Export:
+      Name: !Sub graphql-${StackeryEnvironmentTagName}-url
+  AuroraAddress:
+    Description: The connection address for serverless aurora
+    Value: !GetAtt Aurora.Endpoint.Address
+    Export:
+      Name: !Sub aurora-${StackeryEnvironmentTagName}-address
+  AuroraPort:
+    Description: The port connection to serverless aurora
+    Value: !GetAtt Aurora.Endpoint.Port
+    Export:
+      Name: !Sub aurora-${StackeryEnvironmentTagName}-port
+  SnsTopicArn:
+    Description: The Topic ARN for SNS and Slack
+    Value: !Ref shippingTopic
+    Export:
+      Name: !Sub snsTopic-${StackeryEnvironmentTagName}-arn
+  ItemsArn:
+    Description: Items Arn
+    Value: !GetAtt Items.Arn
+    Export:
+      Name: !Sub items-${StackeryEnvironmentTagName}-arn
+  ItemLogsArn:
+    Description: ItemLogs Arn
+    Value: !GetAtt ItemLogs.Arn
+    Export:
+      Name: !Sub itemLogs-${StackeryEnvironmentTagName}-arn
+  GreenMountainUpsArn:
+    Description: GreenMountainUps Arn
+    Value: !GetAtt GreenMountainUps.Arn
+    Export:
+      Name: !Sub greenMountainUps-${StackeryEnvironmentTagName}-arn
+  EventLogsArn:
+    Description: EventLogs Arn
+    Value: !GetAtt EventLogs.Arn
+    Export:
+      Name: !Sub eventLogs-${StackeryEnvironmentTagName}-arn
+  OrdersArn:
+    Description: Orders Arn
+    Value: !GetAtt Orders.Arn
+    Export:
+      Name: !Sub orders-${StackeryEnvironmentTagName}-arn
+  Edis:
+    Description: Edis Arn
+    Value: !GetAtt Edis.Arn
+    Export:
+      Name: !Sub edis-${StackeryEnvironmentTagName}-arn
+  EdiLogs:
+    Description: Edi Logs Arn
+    Value: !GetAtt EdiLogs.Arn
+    Export:
+      Name: !Sub ediLogs-${StackeryEnvironmentTagName}-arn
+  UpsArn:
+    Description: Ups Arn
+    Value: !GetAtt Ups.Arn
+    Export:
+      Name: !Sub ups-${StackeryEnvironmentTagName}-arn
+  UpsLogsArn:
+    Description: UpsLogs Arn
+    Value: !GetAtt UpsLogs.Arn
+    Export:
+      Name: !Sub upsLogs-${StackeryEnvironmentTagName}-arn
+  OrderLogs:
+    Description: Order Logs Arn
+    Value: !GetAtt OrderLogs.Arn
+    Export:
+      Name: !Sub orderLogs-${StackeryEnvironmentTagName}-arn
+  InterchangeArn:
+    Description: Interchange Arn
+    Value: !GetAtt Interchange.Arn
+    Export:
+      Name: !Sub interchange-${StackeryEnvironmentTagName}-arn
+Conditions:
+  CreateBastionResources: !Not
+    - !Equals
+      - !Ref EnvironmentTagName
+      - prod
+  VirtualNetworkCreateNewResource: !Equals
+    - 'false'
+    - !Ref EnvConfigvpcAsString
+  VirtualNetworkUseExistingResource: !Not
+    - Condition: VirtualNetworkCreateNewResource
+Metadata:
+  EnvConfigParameters:
+    EnvConfigormutilslayerAsString: orm_utils_layer
+    EnvConfigmysqlDatabaseAsString: mysqlDatabase
+    EnvConfigmysqlUserAsString: mysqlUser
+    EnvConfigsshBastionAsString: sshBastion
+    EnvConfigmssqlHostAsString: mssqlHost
+    EnvConfigmssqlPortAsString: mssqlPort
+    EnvConfigmssqlDatabaseAsString: mssqlDatabase
+    EnvConfigmssqlUserAsString: mssqlUser

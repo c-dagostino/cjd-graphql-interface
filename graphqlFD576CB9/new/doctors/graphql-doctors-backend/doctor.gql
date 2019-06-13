@@ -1,0 +1,89 @@
+"Our doctor model"
+type Doctor {
+  "primary key of the doctor"
+  id: Int!
+  "First name of the doctor"
+  firstName: String!
+  "Middle name of the doctor"
+  middleName: String
+  "last name of the doctor"
+  lastName: String!
+  "whether the doctor is blocked from our service"
+  blocked: Boolean!
+  "email to contact doctor"
+  email: AWSEmail
+  "what gender is the doctor"
+  gender: Gender
+  "what is the suffix of the doctor"
+  suffix: String
+  "what title MD or OD"
+  title: DoctorTitleCode
+  "whether the doctor loves and appreciates sightbox"
+  preferred: Boolean!
+  "internal mssql uuid"
+  sbId: String!
+  "has this doctor had changed data"
+  edited: Boolean!
+  "how should we contact the doctor"
+  preferredContact: ContactTypes
+  "What vision groups does this doctor belong in"
+  visionGroupIds: [Int!]
+  "Receipts we have received from the doctor office."
+  Receipts: [Receipt]!
+  "The mobile number to reach the doctor on"
+  mobile: AWSPhone
+  "The practices that the doctor works from (Locations)"
+  Practices: [Practice]!
+}
+
+"input to create a doctor record"
+input createDoctorInput {
+  "first name of the doctor"
+  firstName: String
+  "middle name of the doctor"
+  middleName: String
+  "last name of the doctor"
+  lastName: String
+  "Suffix: MR. MRS. MS. etc."
+  suffix: String
+  "Gender: M or F or O (other)"
+  gender: Gender
+  "Title of the doctor, typically OD"
+  title: DoctorTitleCode
+  "Email to contact the doctor at"
+  email: AWSEmail
+  "Mobile phone number to reach doctor at"
+  mobile: AWSPhone
+  "Method that is perferred for contacting the doctor"
+  preferredContact: ContactTypes
+  "Whether this doctor is blocked from our service"
+  blocked: Boolean
+  "Notes about the doctor / practice"
+  notes: String
+}
+
+"input to update a doctor"
+input updateDoctorInput {
+  "first name of the doctor"
+  firstName: String
+  "middle name of the doctor"
+  middleName: String
+  "last name of the doctor"
+  lastName: String
+  "Suffix: MR. MRS. MS. etc."
+  suffix: String
+  "Gender: M or F or O (other)"
+  gender: Gender
+  "Title of the doctor, typically OD"
+  title: DoctorTitleCode
+  "Email to contact the doctor at"
+  email: AWSEmail
+  "Mobile phone number to reach doctor at"
+  mobile: AWSPhone
+  "Method that is perferred for contacting the doctor"
+  preferredContact: ContactTypes
+  "Whether this doctor is blocked from our service"
+  blocked: Boolean
+  "Notes about the doctor / practice"
+  notes: String
+}

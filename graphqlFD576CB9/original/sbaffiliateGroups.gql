@@ -1,0 +1,8 @@
+type sbaffiliateGroups {
+    sbaffiliateGroupId: Int
+    sbaffiliateGroupName: String
+    sbaffiliateGroupContact: String
+    sbaffiliateGroupEmail: String
+    sbaffiliateGroupPhone: String
+    sbaffiliateGroupActive: Boolean
+}

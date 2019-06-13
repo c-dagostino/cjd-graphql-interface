@@ -1,0 +1,13 @@
+type sbaffiliates {
+    sbaffiliateId: Int
+    sbaffiliateGroupId: Int
+    sbaffiliateFirstName: String
+    sbaffiliateLastName: String
+    sbaffiliateEmail: String
+    sbaffiliateCode: String
+    sbaffiliateCauseTitle: String
+    sbaffiliateCauseDesc: String
+    sbaffiliateBenefitType: String
+    sbaffiliateBenefitAmount: Int
+    sbaffiliateActive: Boolean
+}

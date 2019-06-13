@@ -1,0 +1,16 @@
+type sbdoctorPayments {
+    sbdoctorPaymentId: Int
+    sbdoctorPaymentDate: String
+    sbdoctorTeamId: Int
+    sbdoctorId: Int
+    sbpatientid: Int
+    sbdoctorPaymentExam: Float 
+    sbdoctorPaymentRefraction: Float
+    sbdoctorPaymentFitting: Float
+    sbdoctorPaymentOther: Float
+    sbdoctorPaymentOtherNotes: String
+    sbdoctorPaymentDiscount: Float
+    sbdoctorPaymentTotal: Float
+    sbdoctorPaymentReceipt: String
+    sbdoctorPaymentReceiptDate: String
+}

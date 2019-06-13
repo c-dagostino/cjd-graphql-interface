@@ -1,0 +1,24 @@
+"A visiongroup is really the name of the business, practice is the location"
+type VisionGroup {
+  "primary key in the db"
+  id: Int
+  "Name of the business"
+  name: String
+  "Is this entire chain of locations blocked?"
+  blocked: Boolean
+  "Locations of this businesss"
+  Practices: [Practice]
+}
+
+"Create a vision group record and attach practices"
+input createVisionGroupInput {
+  name: String!
+  blocked: Boolean!
+  practices: [createPracticeInput]!
+}
+
+"Update the vision group"
+input updateVisionGroupInput {
+  name: String
+  blocked: Boolean
+}

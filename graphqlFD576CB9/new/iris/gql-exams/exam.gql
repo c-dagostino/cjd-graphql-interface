@@ -1,0 +1,68 @@
+input AssignExamByTimezoneInput {
+  "The ID of the team member to associate with the patient pulled from the queue."
+  teamId: Int!
+  "The timezone to pull a patient record from."
+  timezone: ExamTimezone!
+}
+
+type ExamSchedulingQueue {
+  "Queue count representing the total sum users waiting to be scheduled for exams"
+  total: Int
+  "Queue count for users whose time zone cannot be determined. Often due to missing/malformed location data."
+  UNDETERMINED: Int
+  "Queue count for Alaskan Time Zone"
+  AKT: Int
+  "Queue count for Central Time Zone"
+  CT: Int
+  "Queue count for Eastern Time Zone"
+  ET: Int
+  "Queue count for Hawaii-Aleutian Time Zone"
+  HT: Int
+  "Queue count for Mountain Time Zone"
+  MT: Int
+  "Queue count for Pacific Time Zone"
+  PT: Int
+}
+
+"scheduling an exam note"
+type ExamApptNotes {
+  "primary key of appt note"
+  id: Int!
+  "the actual note being left"
+  note: String
+}
+"This represents a patient exam"
+type Exam {
+  "The primary key of the exam"
+  id: Int!
+  "The patient the exam is for"
+  Patient: sbpatients
+  "The doctor the exam is with"
+  Doctor: Doctor
+  "The location of the exam"
+  Practice: Practice
+  "Notes attached to the Exam"
+  Notes: [ExamApptNotes]
+  "State of the exam (Scheduled, Cancelled, etc.)"
+  state: ExamState
+  "The date time of the appointment"
+  date: AWSDateTime
+  "The timezone the appointment is happening in"
+  timezone: ExamTimezone
+}
+
+"This represents a patient exam input"
+input ExamInput {
+  "id of patient the exam is for"
+  patientId: Int!
+  "id of doctor the exam is for"
+  doctorId: Int!
+  "id of the practice the exam is at"
+  practiceId: Int!
+  "id of the team member to last take action"
+  teamId: Int!
+  "date/time of the exam"
+  date: AWSDateTime!
+  "what timezone the exam is happening in"
+  timezone: ExamTimezone!
+}

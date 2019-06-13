@@ -1,0 +1,13 @@
+type sbpromoCodes {
+    promoCodeId: Int 
+    promoNetworkId: Int 
+    promoCodeLimits: Int 
+    promoCode: String 
+    promoCodeDesc: String
+    promoCodeUrl: String
+    promoCodeDollarValue: Float 
+    promoCodePercentValue: Float
+    promoCodeExpDate: String
+    promoCodeOnetimeUsed: Boolean
+    promoCodeInactive: Boolean
+}

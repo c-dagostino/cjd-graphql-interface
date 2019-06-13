@@ -1,0 +1,2812 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Mutation {
+  # repo: faxing-portal
+  createFax(payload: createFaxInput): Fax!
+  rejectFax(payload: RejectFaxInput!): Fax!
+  updateFax(payload: UpdateFaxInput!, id: ID!): Fax!
+
+  # repo: graphql-doctors-backend
+  "Creates a new one time use credit card for paying doctors"
+  createPaymentCard(payload: CreatePaymentCardInput): MarqetaCard!
+  "Ability to report card (Cancel, Fraud, Misplaced, Suspected Fraud, Terminate)"
+  reportPaymentCard(payload: ReportPaymentCardInput): MarqetaCard!
+  "Ability to create a vision group, practice, doctor"
+  createVisionGroup(payload: createVisionGroupInput!): VisionGroup!
+  "Ability to create practice, doctors and attach to a visionGroup"
+  createPractice(vid: Int!, payload: createPracticeInput): Practice!
+  "Ability to update existing practice information"
+  updatePractice(practiceId: Int!, payload: updatePracticeInput): Practice!
+  # "Ability to create doctor record"
+  # createDoctor(pid: Int!, payload: createDoctorInput): Doctor!
+  "Ability to update a doctor record"
+  updateDoctor(doctorId: Int!, payload: updateDoctorInput): Doctor!
+  "Ability to update a vision group record"
+  updateVisionGroup(id: Int!, payload: updateVisionGroupInput!): VisionGroup!
+  #repo: gql-exams
+  "Ability to schedule an exam"
+  scheduleExam(payload: ExamInput): Exam!
+  "Ability to update the state of an exam"
+  updateExamState(id: Int!, state: ExamState): Exam!
+  "Ability to create an appointment notes "
+  createAppointmentNotes(
+    "the appointment record id"
+    appointmentId: Int!
+    "the note we are storing"
+    note: String!
+    "the patient id this note pertains to"
+    patientId: Int!
+  ): ExamApptNotes!
+
+  # repo: graphql-events-backend
+  createFaxEvent(payload: CreateFaxEventInput!): Event!
+
+  # repo: graphql-patients-backend
+  "Pops a patient record from the timezone exam queue and assigns the patient to the CX teamId passed in the query."
+  assignPatientByTimezone(payload: AssignExamByTimezoneInput): sbpatients
+  createAccountCredit(payload: CreateAccountCreditInput): Boolean
+  createMembershipSubscription(
+    payload: CreateMembershipSubscriptionInput
+  ): Boolean
+  createPrescription(payload: PrescriptionInput): Prescription!
+  createReceipt(payload: ReceiptInput!): Receipt!
+  deleteReceipt(id: Int!): Boolean
+  updateAccountCreditCardDetails(
+    payload: UpdateAccountCreditCardInput!
+  ): Boolean
+  updatePaymentDate(payload: UpdatePaymentDateInput): Boolean
+  "Adds the ability to update the patient record"
+  updatePatient(payload: UpdatePatientsInput): sbpatients
+  "Update / override the price for a subscription either permanently or temporarily (given an expiration date)"
+  updateSubscriptionPrice(payload: UpdateSubscriptionPriceInput!): Boolean
+  voidTransaction(paymentId: String!): Boolean
+  "releaseExamPatient disassociates a sightbox team member from the patient record 'patientNewTeamMember' in the mssql"
+  releaseExamPatient(patientId: Int!): Boolean!
+  "Link a patient to a doctor"
+  linkPatientDoctor(payload: linkPatientDoctorInput): Boolean
+  "Update subscriber email and password"
+  updateSubscriberCredentials(payload: UpdateSubscriberCredentialsInput): UpdateSubscriberCredentialsResponse
+  "Save subscriber email and password"
+  createSubscriberAccount(payload: CreateSubscriberAccountInput): CreateSubscriberAccountResponse
+}
+
+type Query {
+  # repo: faxing-portal
+  getFaxById(guid: String): Fax
+  getNewFax(teamId: Int!): Fax
+  getFaxes(payload: getFaxesInput): QueryResults
+  getProcessedFax(teamId: Int!): Fax
+  processingQueueCount: Int!
+  verifiedQueueCount: Int!
+  getFaxByPatientId(patientId: Int!): [Fax!]
+
+  # repo: gql-locations
+  "Fetch latitude and longitude data for an arbitrary address string"
+  getLocationFromAddress(address: String!): LatitudeLongitude
+  "Fetch timezone information given an arbitrary latitude/longitude coordinate pair"
+  getTimezoneFromGeolocation(location: TimezoneQueryInput): TimezoneResults
+
+  # repo: graphql-doctors-backend
+  "fetch a doctor by a primary key"
+  getDoctor(doctorId: Int!): Doctor
+  "fetch a practice by primary key"
+  getPractice(practiceId: Int!): Practice
+  "update practice information"
+  updatePractice(practiceId: Int!, payload: updatePracticeInput!): Practice
+  "fetch a vision group by primary key"
+  getVisionGroup(id: Int!): VisionGroup
+  "search vision group by name"
+  searchVisionGroup(name: String!): VisionGroup
+  "search doctors in a given practice"
+  searchDoctor(
+    query: SearchInput!
+    practiceId: Int!
+    visionGroupId: Int!
+  ): SearchPayload!
+  "search practices based on address"
+  searchPractice(query: SearchInput!): SearchPayload!
+  "Search for practices within a certain distance from the provided latitude and longitude"
+  searchPracticesByGeolocation(
+    query: LocationRadiusSearchInput
+  ): [PracticeRadiusSearchResults]!
+
+  # repo: gql-exams
+  "ability to read an array of notes about an appointment"
+  readAppointmentNotes(appointmentId: Int): [ExamApptNotes]!
+
+  # repo: gql-team
+  getTeamMember(teamId: Int!): TeamMember!
+
+  # repo: graphql-patients-backend
+  "examSchedulingQueueCount queries the total number of Sightbox patients that are waiting to be scheduled for an exam."
+  examSchedulingQueueCount: ExamSchedulingQueue
+  getAccountCreditCardDetails(accountNumber: String!): AccountCreditCardDetails
+  getPaymentHistory(accountNumber: String!): PaymentHistory
+  getPrescription(patientId: Int!): Prescription
+  getPatient(patientId: Int!): sbpatients
+  getReceipt(payload: getReceiptInput): [Receipt]!
+  searchPatient(query: SearchInput!): SearchPayload!
+  searchSbPatients(query: SearchInput!): SearchPayload!
+  # repo: graphql-products-backend
+  browseProducts(query: ProductSearchInput): [ProductResults]
+  getProductsByModality(modality: ModalityInputEnum): [ProductName]
+  getProductParameters(input: getProductParametersInput): ProductParameters
+
+  validateAddress(address: String!): String
+  getPaymentCards(patientId: Int!): [MarqetaCard!]!
+  product(id: String!): ProductResults
+  products(query: ProductSearchInput): [ProductResults]
+  categories(query: ProductCategoryInput): [String]
+  inventoryStatus(upc: String!): InventoryStatusResults
+  "getBillingAccount describes a billing account from our payment processor"
+  getBillingAccount(accountNumber: String!): BillingAccount
+
+  # repo: gql-supplychain-backend
+  getOrders(query: OrderInput): [Order!]
+}
+
+
+type Contact {
+	id: Int!
+	type: ContactType!
+	value: String!
+}
+
+input createContactInput {
+	type: ContactType!
+	value: String! 
+}
+
+input updateContactInput {
+	type: ContactType
+	value: String
+}
+
+input deleteContactInput {
+	id: Int!
+}
+
+input linkContactToDoctorInput {
+	doctorId: Int!
+	contactId: Int!
+}
+
+input linkContactToPracticeInput {
+	contactId: Int!
+	practiceId: Int!
+}
+
+"Our doctor model"
+type Doctor {
+  "primary key of the doctor"
+  id: Int!
+  "First name of the doctor"
+  firstName: String!
+  "Middle name of the doctor"
+  middleName: String
+  "last name of the doctor"
+  lastName: String!
+  "whether the doctor is blocked from our service"
+  blocked: Boolean!
+  "email to contact doctor"
+  email: AWSEmail
+  "what gender is the doctor"
+  gender: Gender
+  "what is the suffix of the doctor"
+  suffix: String
+  "what title MD or OD"
+  title: DoctorTitleCode
+  "whether the doctor loves and appreciates sightbox"
+  preferred: Boolean!
+  "internal mssql uuid"
+  sbId: String!
+  "has this doctor had changed data"
+  edited: Boolean!
+  "how should we contact the doctor"
+  preferredContact: ContactTypes
+  "What vision groups does this doctor belong in"
+  visionGroupIds: [Int!]
+  "Receipts we have received from the doctor office."
+  Receipts: [Receipt]!
+  "The mobile number to reach the doctor on"
+  mobile: AWSPhone
+  "The practices that the doctor works from (Locations)"
+  Practices: [Practice]!
+}
+
+"input to create a doctor record"
+input createDoctorInput {
+  "first name of the doctor"
+  firstName: String
+  "middle name of the doctor"
+  middleName: String
+  "last name of the doctor"
+  lastName: String
+  "Suffix: MR. MRS. MS. etc."
+  suffix: String
+  "Gender: M or F or O (other)"
+  gender: Gender
+  "Title of the doctor, typically OD"
+  title: DoctorTitleCode
+  "Email to contact the doctor at"
+  email: AWSEmail
+  "Mobile phone number to reach doctor at"
+  mobile: AWSPhone
+  "Method that is perferred for contacting the doctor"
+  preferredContact: ContactTypes
+  "Whether this doctor is blocked from our service"
+  blocked: Boolean
+  "Notes about the doctor / practice"
+  notes: String
+}
+
+"input to update a doctor"
+input updateDoctorInput {
+  "first name of the doctor"
+  firstName: String
+  "middle name of the doctor"
+  middleName: String
+  "last name of the doctor"
+  lastName: String
+  "Suffix: MR. MRS. MS. etc."
+  suffix: String
+  "Gender: M or F or O (other)"
+  gender: Gender
+  "Title of the doctor, typically OD"
+  title: DoctorTitleCode
+  "Email to contact the doctor at"
+  email: AWSEmail
+  "Mobile phone number to reach doctor at"
+  mobile: AWSPhone
+  "Method that is perferred for contacting the doctor"
+  preferredContact: ContactTypes
+  "Whether this doctor is blocked from our service"
+  blocked: Boolean
+  "Notes about the doctor / practice"
+  notes: String
+}
+
+
+type geometry {
+	x: Float!
+	y: Float!
+}
+
+
+input geometryInput {
+	x: Float!
+	y: Float!
+}
+
+"Practice model is a physical location of the vision group (business)"
+type Practice {
+  "Primary key of practice"
+  id: Int!
+  "whether we have blocked the practice or not"
+  blocked: Boolean!
+  "preferred partner of sightbox"
+  preferred: Boolean!
+  "is this practice active"
+  closed: Boolean!
+  "are they easily accesible to handicap individuals"
+  handicapAccessible: Boolean!
+  "do they offer a unique care for each patients"
+  personalizedCare: Boolean!
+  "Do they accept new contact lenses"
+  newContacts: Boolean!
+  "street address"
+  address1: String!
+  "secondary field for address, typically suite #"
+  address2: String
+  "fax number for practice"
+  faxNumber: String
+  "city they are in"
+  city: String!
+  "state that they are located in"
+  state: State!
+  "zipcode they reside in"
+  zipcode: String!
+  "The doctor / practice website"
+  website: String
+  "Email used to contact practice"
+  email: AWSEmail
+  "Preferred Method of Contact for practice"
+  notes: String
+  preferredContact: ContactTypes
+  "The work phone to contact the doctor at"
+  workPhone: AWSPhone
+  "Country they are located in"
+  country: Country!
+  location: geometry!
+  Hours: [hours]
+  Doctors: [Doctor]
+  VisionGroups: [VisionGroup]
+  ActivePatients: [sbpatients]
+}
+
+type hours {
+  id: Int
+  day: Int!
+  openTime: String!
+  closeTime: String!
+  timezone: String!
+}
+
+input hoursInput {
+  day: Int!
+  openTime: String!
+  closeTime: String!
+  timezone: String!
+}
+
+"Payload to create a practice with. This is typically a location."
+input createPracticeInput {
+  "Is this practice blocked"
+  blocked: Boolean!
+  "Is this practice perferred"
+  preferred: Boolean!
+  "Is this practice closed"
+  closed: Boolean
+  "Is this practice handicap accessible"
+  handicapAccessible: Boolean
+  "Is this a good practice that personalizes the experience"
+  personalizedCare: Boolean
+  "Is this a good practice for new contact lense wearers"
+  newContacts: Boolean
+  "Street address of the location"
+  address1: String!
+  "building number of the location"
+  address2: String
+  "city that the practice is located in"
+  city: String!
+  "State that the practice is located in"
+  state: State!
+  "zipcode that the practice is located in"
+  zipcode: String!
+  "Country that the practice is located in. Typically US"
+  country: Country!
+  "Hours of operation for the clinic"
+  hours: [hoursInput]
+  "Doctors that practice at this location"
+  doctors: [createDoctorInput]
+  "The work phone to contact the doctor at"
+  workPhone: AWSPhone
+  "The fax number to contact the doctor at"
+  faxNumber: String!
+  "The doctor / clinic website"
+  website: String
+  "Email used to contact clinic"
+  email: AWSEmail
+  "Preferred Method of Contact for clinic"
+  preferredContact: ContactTypes
+  "Notes about the practice/doctors"
+  notes: String
+}
+
+"payload used to update a practice"
+input updatePracticeInput {
+  "Is this practice blocked"
+  blocked: Boolean
+  "Is this practice perferred"
+  preferred: Boolean
+  "Is this practice closed"
+  closed: Boolean
+  "Is this practice handicap accessible"
+  handicapAccessible: Boolean
+  "Is this a good practice that personalizes the experience"
+  personalizedCare: Boolean
+  "Is this a good practice for new contact lense wearers"
+  newContacts: Boolean
+  "Street address of the location"
+  address1: String
+  "building number of the location"
+  address2: String
+  "city that the practice is located in"
+  city: String
+  "State that the practice is located in"
+  state: State
+  "zipcode that the practice is located in"
+  zipcode: String
+  "Country that the practice is located in. Typically US"
+  country: Country
+  "The work phone to contact the doctor at"
+  workPhone: AWSPhone
+  "The fax number to contact the doctor at"
+  faxNumber: String
+  "The doctor / clinic website"
+  website: String
+  "Email used to contact clinic"
+  email: AWSEmail
+  "Preferred Method of Contact for clinic"
+  preferredContact: ContactTypes
+  "Notes about the practice/doctors"
+  notes: String
+}
+
+input linkPracticeToVisionGroupInput {
+  practiceId: Int!
+  visionGroupId: Int!
+}
+
+
+"A visiongroup is really the name of the business, practice is the location"
+type VisionGroup {
+  "primary key in the db"
+  id: Int
+  "Name of the business"
+  name: String
+  "Is this entire chain of locations blocked?"
+  blocked: Boolean
+  "Locations of this businesss"
+  Practices: [Practice]
+}
+
+"Create a vision group record and attach practices"
+input createVisionGroupInput {
+  name: String!
+  blocked: Boolean!
+  practices: [createPracticeInput]!
+}
+
+"Update the vision group"
+input updateVisionGroupInput {
+  name: String
+  blocked: Boolean
+}
+
+
+enum Gender {
+  F
+  M
+  O
+}
+
+enum FaxType {
+  RECEIPT
+  RX
+  RXRECEIPT
+}
+
+enum TMActionEnums {
+  EMAIL_SENT
+  FAX_PROCESSING
+  FAX_SENT
+  FAX_VERIFIED
+  FAX_VERIFYING
+  LOGIN
+  LOGOUT
+}
+
+enum EventEnum {
+  FAX_COMPLETE
+  FAX_NEW
+  FAX_PENDING
+  FAX_PROCESSED
+  FAX_PROCESSING
+  FAX_REJECTED
+  FAX_RELEASED
+  FAX_SENT
+  FAX_VERIFIED
+  MARQETA_CARD_CREATED
+  MARQETA_USER_CREATED
+}
+
+enum FaxState {
+  COMPLETE
+  NEW
+  PENDING
+  PROCESSED
+  VERIFIED
+}
+
+enum FaxRejection {
+  DOCTOR_CLARIFICATION_NEEDED
+  INCOMPLETE_RX
+  INCORRECT_RX
+  MEMBER_INPUT_NEEDED
+  NONE
+}
+
+enum FaxStatus {
+  BLACKLISTED
+  BUSY
+  DISCONNECTED
+  ERROR
+  HOLD
+  NOANSWER
+  PENDING
+  SUCCESSFUL
+  TRANSMITTING
+  UNALLOCATED
+  UNKNOWNERROR
+  UNKNOWNSTATUS
+}
+enum ExamState {
+  CANCELLED
+  CONFIRMED
+  RESCHEDULED
+  SCHEDULED
+}
+
+enum State {
+  AA
+  AE
+  AK
+  AL
+  AP
+  AR
+  AS
+  AZ
+  CA
+  CO
+  CT
+  DC
+  DE
+  FL
+  FM
+  GA
+  GU
+  HI
+  IA
+  ID
+  IL
+  IN
+  KS
+  KY
+  LA
+  MA
+  MD
+  ME
+  MH
+  MI
+  MN
+  MO
+  MP
+  MS
+  MT
+  NC
+  ND
+  NE
+  NH
+  NJ
+  NM
+  NV
+  NY
+  OH
+  OK
+  OR
+  PA
+  PR
+  PW
+  RI
+  SC
+  SD
+  TN
+  TX
+  UT
+  VA
+  VI
+  VT
+  WA
+  WI
+  WV
+  WY
+}
+
+enum Country {
+  US
+}
+
+enum ContactType {
+  EMAIL
+  FAX
+  PHONE
+}
+
+enum ModalityInputEnum {
+  BIWEEKLY
+  DAILIES
+  MONTHLY
+  QUARTERLY
+  WEEKLY
+}
+
+enum Parameters {
+  ADD
+  AXIS
+  BASECURVE
+  COLOR
+  CYL
+  DIAMETER
+  POWER
+  SIGN
+}
+
+enum TypeEnum {
+  H
+  M
+  S
+  T
+}
+
+enum PowerSignEnum {
+  M
+  P
+}
+
+enum ReportPaymentCardEnum {
+  ACTIVE
+  CANCEL
+  FRAUD
+  MISPLACED
+  SUSPECTED_FRAUD
+  TERMINATE
+}
+
+enum ContactTypes {
+  EMAIL
+  FAX
+  FAX_EMAIL
+}
+
+enum DoctorTitleCode {
+  MD
+  OD
+}
+
+enum ExamTimezone {
+  "Alaska Time"
+  AKT
+  "Central Time"
+  CT
+  "Eastern Time"
+  ET
+  "Hawaii Time"
+  HT
+  "Mountain Time"
+  MT
+  "Pacific Time"
+  PT
+  "The timezone was unable to be determined."
+  UNDETERMINED
+}
+
+
+interface Event {
+  id: ID!
+  event: EventEnum!
+  description: String
+  recordId: String!
+  teamId: Int
+  createdAt: AWSDateTime
+}
+
+type TeamMemberEvent implements Event {
+  id: ID!
+  event: EventEnum!
+  description: String
+  recordId: String!
+  teamId: Int
+  createdAt: AWSDateTime
+  ip: AWSIPAddress!
+  browser: String!
+  userAgent: String!
+  version: String!
+  action: TMActionEnums
+}
+
+type FaxEvent implements Event {
+  id: ID!
+  event: EventEnum!
+  recordId: String!
+  teamId: Int
+  to: String
+  from: String
+  createdAt: AWSDateTime
+  description: String
+  memberId: Int
+}
+
+type MarqetaEvent implements Event {
+  id: ID!
+  event: EventEnum!
+  description: String
+  recordId: String!
+  teamId: Int
+  createdAt: AWSDateTime
+  doctorId: Int
+}
+
+input CreateFaxEventInput {
+  event: EventEnum!
+  description: String
+  recordId: String!
+  teamId: Int
+  rxVerified: Boolean,
+  rxVerifiedDate: AWSDateTime,
+  rxVerifiedBy: String,
+  rxVerifiedIP: AWSIPAddress
+}
+
+type Fax {
+    id: String
+    state: FaxState
+    inbound: Boolean
+    status: FaxStatus
+    settings: settings
+    from: String
+    to: String
+    type: FaxType
+    rejectType: FaxRejection
+    link: String
+    viewPdf: String
+    patientId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    doctorId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    practiceId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    teamId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    verifiedTeamId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    processorTeamId: Int @deprecated(reason: "Field is deprecated! Will be removed in future release")
+    createdAt: String
+    updatedAt: String
+    Patient: sbpatients
+    Doctor: Doctor
+    Practice: Practice
+    Events: [Event!]
+    Receipt: Receipt
+    GetPracticeByFax: [Practice]
+}
+
+type settings {
+    lock: Boolean
+    archive: Boolean
+    processingPriority: Boolean
+}
+
+
+
+input UpdateFaxInput {
+	state: FaxState
+	status: FaxStatus
+	type: FaxType
+	patientId: Int
+	doctorId: Int
+	practiceId: Int
+	verifiedTeamId: Int
+	processorTeamId: Int
+	settings: UpdateSettingsInput
+}
+
+input RejectFaxInput {
+	reason: FaxRejection!
+	id: ID!
+}
+
+input UpdateSettingsInput {
+	lock: Boolean!
+	archive: Boolean!
+	processingPriority: Boolean!
+}
+
+input LinkFaxDoctorInput {
+	id: String!
+	doctorId: Int!
+}
+
+input LinkFaxPatientInput {
+	id: String!
+	patientId: Int!
+}
+
+input LinkFaxPracticeInput {
+	id: String!
+	practiceId: Int!
+}
+
+input createFaxInput {
+	id: String!
+	inbound: Boolean!
+	from: String!
+	to: String!
+	link: String
+	status: FaxStatus!
+}
+
+input getFaxesInput {
+	startDate: AWSDateTime!
+	endDate: AWSDateTime!
+	rejected: Boolean
+	rejectType: FaxRejection
+	state: FaxState
+	patientId: Int
+	pending: Boolean
+	count: Int
+	nextToken: String
+}
+
+
+input AssignExamByTimezoneInput {
+  "The ID of the team member to associate with the patient pulled from the queue."
+  teamId: Int!
+  "The timezone to pull a patient record from."
+  timezone: ExamTimezone!
+}
+
+type ExamSchedulingQueue {
+  "Queue count representing the total sum users waiting to be scheduled for exams"
+  total: Int
+  "Queue count for users whose time zone cannot be determined. Often due to missing/malformed location data."
+  UNDETERMINED: Int
+  "Queue count for Alaskan Time Zone"
+  AKT: Int
+  "Queue count for Central Time Zone"
+  CT: Int
+  "Queue count for Eastern Time Zone"
+  ET: Int
+  "Queue count for Hawaii-Aleutian Time Zone"
+  HT: Int
+  "Queue count for Mountain Time Zone"
+  MT: Int
+  "Queue count for Pacific Time Zone"
+  PT: Int
+}
+
+"scheduling an exam note"
+type ExamApptNotes {
+  "primary key of appt note"
+  id: Int!
+  "the actual note being left"
+  note: String
+}
+"This represents a patient exam"
+type Exam {
+  "The primary key of the exam"
+  id: Int!
+  "The patient the exam is for"
+  Patient: sbpatients
+  "The doctor the exam is with"
+  Doctor: Doctor
+  "The location of the exam"
+  Practice: Practice
+  "Notes attached to the Exam"
+  Notes: [ExamApptNotes]
+  "State of the exam (Scheduled, Cancelled, etc.)"
+  state: ExamState
+  "The date time of the appointment"
+  date: AWSDateTime
+  "The timezone the appointment is happening in"
+  timezone: ExamTimezone
+}
+
+"This represents a patient exam input"
+input ExamInput {
+  "id of patient the exam is for"
+  patientId: Int!
+  "id of doctor the exam is for"
+  doctorId: Int!
+  "id of the practice the exam is at"
+  practiceId: Int!
+  "id of the team member to last take action"
+  teamId: Int!
+  "date/time of the exam"
+  date: AWSDateTime!
+  "what timezone the exam is happening in"
+  timezone: ExamTimezone!
+}
+
+
+input CreatePaymentCardInput {
+  patientId: Int!
+  doctorId: Int!
+  teamId: Int!
+}
+
+type MarqetaCard {
+  id: String!
+  number: String!
+  state: ReportPaymentCardEnum!
+  exp: String!
+  cvv: String!
+}
+
+input ReportPaymentCardInput {
+  "id is the card token to perform an action against."
+  id: ID!
+  "reason is a free form field for notes"
+  reason: String!
+  "code is the reason code derived from our internal list"
+  code: ReportPaymentCardEnum!
+  "teamId is the team member performing an action against a card"
+  teamId: Int!
+}
+
+
+"Represents a sightbox team member"
+type TeamMember {
+  "Primary key to identify the teamMember by"
+  id: Int
+  "First name of the teaam member"
+  firstName: String
+  "Middle name of the team member"
+  middleName: String
+  "Last name of the team member"
+  lastName: String
+  "Title of the team member"
+  title: String
+  "Email of the team member"
+  email: AWSEmail
+  "Mobile phone of the team member"
+  mobile: AWSPhone
+  "Work mobile phone of the team member"
+  workMobile: AWSPhone
+  "When were they created"
+  createdAt: AWSDateTime
+  "When was the last time this record was updated"
+  updatedAt: AWSDateTime
+  #"The patients this user has interacted with"
+  #Patients: [sbpatients]!
+  #"Faxes this user has processed"
+  #ProcessedFaxes: [Fax]!
+  #"Faxes this user has verified"
+  #VerifiedFaxes: [Fax]!
+}
+
+"Represents a team member field for creation"
+input TeamMemberInput {
+  "First name of the teaam member"
+  firstName: String
+  "Middle name of the team member"
+  middleName: String
+  "Last name of the team member"
+  lastName: String
+  "Title of the team member"
+  title: String
+  "Email of the team member"
+  email: AWSEmail
+  "Mobile phone of the team member"
+  mobile: AWSPhone
+  "Work mobile phone of the team member"
+  workMobile: AWSPhone
+}
+
+
+input linkPatientDoctorInput {
+  "id of the patient we are linking from"
+  patientId: Int!
+  "id of the doctor we are linking to"
+  doctorId: Int!
+  "the id of the practice that the doctor and patient were both at"
+  practiceId: Int!
+}
+
+
+"A latitude/longitude coordinate pair"
+type LatitudeLongitude {
+  "The latitude represented by decimal degrees"
+  latitude: Float!
+  "The latitude represented by decimal degrees"
+  longitude: Float!
+}
+
+"Input for a latitude longitude coordinate pair"
+input LatitudeLongitudeInput {
+  "The latitude represented by decimal degrees"
+  latitude: Float!
+  "The latitude represented by decimal degrees"
+  longitude: Float!
+}
+
+"Results from fetching a timezone based off of geolocation."
+type TimezoneResults {
+  "The offset for daylight-savings time in seconds"
+  dstOffset: Int!
+  "The offset from UTC in seconds"
+  rawOffset: Int!
+  "A string containing the ID of the time zone, such as America/Los_Angeles"
+  timeZoneId: String!
+  "The long form name of the time zone, such as Pacific Daylight Time"
+  timeZoneName: String!
+  "The timezone mapped to its Sightbox equivalent (if applicable)"
+  sbTimezone: ExamTimezone
+}
+
+"input for queries searching for timezone information"
+input TimezoneQueryInput {
+  "The latitude of the point for which to search timezone information."
+  latitude: Float!
+  "The longitude of the point for which to search timezone information."
+  longitude: Float!
+}
+
+"Input for queries searching within a distance radius of a location"
+input LocationRadiusSearchInput {
+  "The location at the center of the radius search"
+  location: LatitudeLongitudeInput!
+  "The distance radius used to search within"
+  distance: Int!
+  "A page number for paginated results"
+  page: Int
+  "The maximum amount of results to return from the search"
+  limit: Int
+}
+
+"A result from searching for practices within a distance radius of a location."
+type PracticeRadiusSearchResults {
+  "The practice that was found within the distance radius."
+  practice: Practice!
+  "The number of exams we have scheduled at this practice."
+  totalExams: Int!
+  "The average cost of an exam at the practice."
+  averageExamCost: Int
+  "The distance the practice is from the origin location."
+  distance: GoogleMapsDistanceResults
+  "The estimated time it takes to travel from the origin location to the practice."
+  duration: GoogleMapsDurationResults
+}
+
+"Results representing the distance between two locations."
+type GoogleMapsDistanceResults {
+  "The human readable distance in miles."
+  text: String!
+  "The distance in meters."
+  value: Int!
+}
+
+"Results representing travel time between two locations."
+type GoogleMapsDurationResults {
+  "Human readable travel time. I.e. 15 hours 9 mins"
+  text: String!
+  "The travel time in seconds."
+  value: Int!
+}
+
+
+input CreateMembershipSubscriptionInput {
+  subscriberId: Int
+  patientId: Int!
+  firstName: String
+  lastName: String
+  address1: String
+  address2: String
+  city: String
+  state: String
+  postalCode: String
+  phone: String
+  email: String
+  paymentMethodId: String
+  subscriptionDate: String!
+  productRatePlanId: String!
+  existingAccountNumber: String
+}
+
+input CreateAccountCreditInput {
+  subscriptionNumber: String!
+  creditAmount: String!
+  comment: String
+}
+
+type PaymentHistory {
+  transactions: [Transaction]
+  paymentTotal: String
+  paymentCount: Int!
+}
+
+type Transaction {
+  amount: String!
+  date: String!
+  status: String!
+  transactionId: String
+  bankMessage: String!
+}
+
+input UpdatePaymentDateInput {
+  accountNumber: String!
+  newPaymentDate: String!
+}
+
+type AccountCreditCardDetails {
+  id: String!
+  cardType: String!
+  cardNumber: String!
+  expirationMonth: Int!
+  expirationYear: Int!
+  cardHolderInfo: CardHolderInfo!
+}
+
+type CardHolderInfo {
+  cardHolderName: String
+  addressLine1: String
+  addressLine2: String
+  city: String
+  state: String
+  zipCode: String
+  country: String
+  phone: AWSPhone
+  email: AWSEmail
+}
+
+input UpdateAccountCreditCardInput {
+  accountNumber: String!
+  paymentMethodId: String!
+}
+
+"type BillingAccount describes an account from our payment processor"
+type BillingAccount {
+  delinquent: Boolean
+}
+
+"Input for overriding a member subscription rate"
+input UpdateSubscriptionPriceInput {
+  accountNumber: String!
+  subscriptionNumber: String!
+  newPrice: String!
+  "Optional - Expires the override on the given date."
+  expirationDate: AWSDateTime
+}
+
+
+"Input for updating subscriber email and password"
+input UpdateSubscriberCredentialsInput {
+  currentEmail: AWSEmail
+  currentPassword: String
+  newEmail: AWSEmail
+  newPassword: String
+}
+
+"Response from updating a subscriber's credentails"
+type UpdateSubscriberCredentialsResponse {
+  success: Boolean!
+  message: String
+}
+
+"Input for creating subscriber account"
+input CreateSubscriberAccountInput {
+  email: AWSEmail!
+  password: String!
+}
+
+"Response from creating a subscriber"
+type CreateSubscriberAccountResponse {
+  success: Boolean!
+  message: String
+}
+
+type Prescription {
+	os: [Eye]
+	od: [Eye]
+	patientId: Int!
+	expirationDate: String
+}
+
+type Eye {
+	power: String
+	sign: String
+	baseCurve: String
+	diameter: String
+	cyl: String
+	axis: String
+	add: String
+	color: String
+	details: EyeDetails
+}
+
+type EyeDetails {
+	name: String!
+	quantity: Int!
+	upc: String!
+	price: Float!
+	productId: Int!
+}
+
+input PrescriptionInput {
+	os: [EyeInput]
+	od: [EyeInput]
+	patientId: Int!
+	expirationDate: String
+}
+
+input EyeInput {
+	power: String
+	sign: String
+	baseCurve: String
+	diameter: String
+	cyl: String
+	axis: String
+	add: String
+	color: String
+	details: EyeDetailsInput!
+}
+
+input EyeDetailsInput {
+	quantity: Int!
+	productId: Int!
+}
+
+
+type ProductName {
+  id: Int!
+  name: String!
+  type: String!
+}
+
+input getProductParametersInput {
+  productId: Int!
+  field: Parameters!
+  type: String!
+  parameters: ParameterInput
+}
+
+input ParameterInput {
+  baseCurve: String
+  diameter: String
+  sign: String
+  power: String
+  cyl: String
+  axis: String
+  add: String
+  color: String
+}
+
+type ProductParameters {
+  type: String!
+  field: Parameters!
+  values: [String!]
+}
+
+type ProductResults {
+  id: String
+  description: String
+  packaging: String
+  manufacturer: String
+  baseCurve: String
+  product: String
+  color: String
+  power: String
+  add: String
+  upc: String
+  version: String
+  type: TypeEnum
+  powerSign: PowerSignEnum
+  cylinder: String
+  axis: String
+  deprecation_flag: Boolean
+  diameter: String
+  productHash: String
+  modality: String
+}
+
+type InventoryStatusResults {
+  available: String
+  availdate: String
+  price: String
+}
+
+input ProductCategoryInput {
+  fieldName: String
+  manufacturer: String
+  packaging: String
+  color: String
+  baseCurve: String
+  power: String
+  add: String
+  powerSign: PowerSignEnum
+  type: TypeEnum
+}
+
+input ProductSearchInput {
+  id: String
+  description: String
+  packaging: String
+  color: String
+  manufacturer: String
+  baseCurve: String
+  product: String
+  power: String
+  add: String
+  upc: String
+  version: String
+  type: TypeEnum
+  powerSign: PowerSignEnum
+  cylinder: String
+  axis: String
+  deprecationFlag: Boolean
+  diameter: String
+  "Modality is how long a contact lens can be worn before it is replaced. Daily, 2-week, monthly, and quarterly, etc."
+  # Switching to an emum at a later time when the modality/origin_modality columns are resolved to standard values
+  modality: String
+}
+
+
+type QueryResults {
+  results: [QueryValueResults]
+  nextToken: String
+}
+
+input ReceiptInput {
+    paymentDate: AWSDateTime
+    teamId: Int!
+    doctorId: Int!
+    patientId: Int!
+    faxId: String
+    exam: Float
+    refraction: Float
+    fitting: Float
+    other: Float
+    notes: String
+    discount: Float
+    image: String
+    receiptDate: AWSDateTime
+}
+
+input getReceiptInput {
+    paymentId: Int
+    teamId: Int
+    patientId: Int
+    doctorId: Int
+}             
+
+type Receipt {
+    paymentDate: AWSDateTime
+    TeamMember: sbteammembers
+    Doctor: sbdoctors
+    Fax: Fax
+    Patient: sbpatients
+    exam: Float
+    refraction: Float
+    fitting: Float
+    other: Float
+    notes: String
+    discount: Float
+    total: Float
+    image: String
+    receiptDate: AWSDateTime
+    id: Int
+}
+
+type SearchPayload {
+	total: Int!
+	results: [SearchResults]!
+	nextToken: SearchNextPage
+}
+
+type SearchNextPage {
+	query: String!
+	limit: Int!
+	page: Int!
+}
+
+input SearchInput {
+	query: String!
+	page: Int
+	limit: Int
+}
+
+
+input OrderInput {
+  "Id of an order generated by dynamodb"
+  orderId: String
+  "Status of the order: PLACED, DELAYED, PROCESSED, SHIPPED, COMPLETED, ERROR, SHIPPING_ERROR"
+  orderState: String
+  "Id of a patient from sbpatients table"
+  patientId: Int
+  "Supplier that would handle order: oogp or jax"
+  supplier: String
+}
+
+type Order {
+  "Id of the order generated by dynamodb"
+  orderId: String
+  "Status of the order: PLACED, DELAYED, PROCESSED, SHIPPED, COMPLETED, ERROR, SHIPPING_ERROR"
+  orderState: String
+  "Id of the patient from sbpatients table"
+  patientId: Int
+  "Supplier order will be sent to: oogp or jax"
+  supplier: String
+  "Override ground shipping and send next day"
+  shippingOverride: Boolean
+  "Tracking number of shipment, if shipped"
+  trackingNumber: String
+  "Time order was created in lambda"
+  orderTime: AWSDateTime
+  "Dynamodb generated timestamp"
+  createdAt: AWSDateTime
+  "Dynamodb generated timestamp"
+  updatedAt: AWSDateTime
+}
+
+
+
+union SearchResults = Practice | Doctor | sbpatients
+union QueryValueResults = Fax
+
+
+type sbApptFollowUps {
+    sbApptFollowUpId: Int
+    sbApptFollowUpAdded: String 
+    patientid: Int
+    doctorid: Int
+    teamid: Int
+    sbApptFollowUpDate: String 
+    sbApptFollowUpTimeZone: String
+    sbApptFollowUpReason: String
+    sbApptFollowUpNotes: String
+}
+
+type sbApptHistory {
+    sbApptHistoryId: Int
+    patientid: Int
+    doctorid: Int
+    sbApptDate: String
+    sbApptTimeZone: String
+    sbApptNotes: String
+    sbApptStatus: String
+    teamid: Int
+    lastUpdated: String
+    lastUpdatedIp: String
+}
+
+type sbCancelReasonGroups {
+    sbCancelReasonGroupId: Int
+    sbCancelReasonGroup: String
+    sbCancelReasonGroupOrderNum: Int
+    sbCancelReasonGroupInactive: Boolean
+}
+
+type sbCancelReasons {
+    sbCancelReasonId: Int
+    sbCancelReasonGroupId: Int
+    sbCancelReason: String 
+    sbCancelReasonOrderNum: Int
+    sbCancelReasonInactive: Boolean
+}
+
+type sbRxImageArchives {
+    sbRxImageArchiveId: Int
+    sbpatientId: Int
+    sbRxImage: String
+}
+
+type sbSnapshotShipments {
+    sbSnapshotShipmentId: Int
+    sbSnapshotShipmentDate: String
+    sbSnapshotShipmentsOrigin: String
+    sbSnapshotShipmentsLensId: Int
+    sbSnapshotShipmentsLensType: String
+    sbSnapshotShipmentsTotal: Int
+    sbSnapshotShipmentsAvgDays: Int
+    sbSnapshotShipmentsLT3Days: Int
+    sbSnapshotShipmentsLTE5Days: Int
+    sbSnapshotShipmentsLTE10Days: Int
+    sbSnapshotShipmentsLTE15Days: Int
+    sbSnapshotShipmentsLTE20Days: Int
+    sbSnapshotShipmentsLTE30Days: Int
+    sbSnapshotShipmentsLTE45Days: Int
+    sbSnapshotShipmentsLTE60Days: Int
+    sbSnapshotShipmentsGT60Days: Int
+}
+
+type sbSnapshots {
+    sbSnapshotId: Int 
+    sbSnapshotDate: String
+    sbSnapshotMembers: Int
+    sbSnapshotPreDelinquent: Int
+    sbSnapshotDelinquent: Int
+    sbSnapshotDelinquent60: Int
+    sbSnapshotDelinquent90: Int
+    sbSnapshotDelinquent91Plus: Int
+    sbSnapshotCancelled: Int
+    sbSnapshotCancelledInYear1: Int
+    sbSnapshotCancelledEndYear1: Int
+    sbSnapshotCancelledInYear2: Int
+    sbSnapshotCancelledEndYear2: Int
+    sbSnapshotCancelledInYear3: Int
+    sbSnapshotCancelledEndYear3: Int
+    sbSnapshotCancelledInYear4: Int
+    sbSnapshotCancelledEndYear4: Int
+    sbSnapshotCancelledInYear5: Int
+    sbSnapshotCancelledEndYear5: Int
+    sbSnapshotCancelledNoPayments: Int
+    sbSnapshotCancelledOvercredited: Int
+    sbSnapshotCancelledUnknown: Int
+    sbSnapshotGoodStanding: Int
+    sbSnapshotInYear1: Int
+    sbSnapshotInYear2: Int
+    sbSnapshotInYear3: Int
+    sbSnapshotInYear4: Int
+    sbSnapshotInYear5: Int
+}
+
+type sbabandoned {
+    patientid: Int
+    tempPatientId: String
+    patientAddDate: String 
+    patientAffiliate: String
+    patientMemberRate: Float
+    patientLensesPerWeek: Int
+    patientLensType: Int 
+    patientHasPrescription: Int
+    patientSignupComments: String
+    patientLeadTeamMember: Int
+    patientLeadHelloMsg1: String
+    patientLeadHelloMsg1Viewed: String
+    patientFirstname: String
+    patientMiddlename: String
+    patientLastname: String
+    patientSuffix: String
+    patientDob: String
+    patientSex: String
+    patientDAddress1: String
+    patientDAddress2: String
+    patientDCity: String
+    patientDState: String
+    patientDZipcode: String
+    patientDCountry: String
+    patientDEmail: String
+    patientDMobile: String
+    patientSignupReferrer: String
+    patientOutreach1: String
+    patientOutreach2: String
+    patientOutreach3: String
+    patientUpdateIp: String
+    patientUserAgent: String
+    patientBrowserName: String
+    patientBrowserVersion: String
+    patientEngineName: String
+    patientEngineVersion: String
+    patientPlatformName: String
+    patientPlatformType: String
+    patientPlatformVersion: String
+}
+
+type sbaffiliateGroups {
+    sbaffiliateGroupId: Int
+    sbaffiliateGroupName: String
+    sbaffiliateGroupContact: String
+    sbaffiliateGroupEmail: String
+    sbaffiliateGroupPhone: String
+    sbaffiliateGroupActive: Boolean
+}
+
+type sbaffiliates {
+    sbaffiliateId: Int
+    sbaffiliateGroupId: Int
+    sbaffiliateFirstName: String
+    sbaffiliateLastName: String
+    sbaffiliateEmail: String
+    sbaffiliateCode: String
+    sbaffiliateCauseTitle: String
+    sbaffiliateCauseDesc: String
+    sbaffiliateBenefitType: String
+    sbaffiliateBenefitAmount: Int
+    sbaffiliateActive: Boolean
+}
+
+type sbautoReports {
+    autoReportId: Int
+    autoReportFirstname: String
+    autoReportLastname: String
+    autoReportEmail: String
+    autoReportPulse: Boolean
+}
+
+type sbautologins {
+    sbautologinId: Int
+    sbautologinSEcode: String
+    sbautologinSBEcode: String
+    sbautologinKey: String
+    sbautologinExpire: String
+}
+
+type sbchecks {
+    sbcheckId: Int
+    doctorid: Int
+    sbcheckId_Lob: String
+    sbcheckNumber: Int
+    sbcheckAmount: Float
+    sbcheckCreatedDate: String
+    sbcheckModifiedDate: String
+    sbcheckDeliveryDate: String
+    sbcheckDescription: String
+    sbcheckMemo: String
+    sbcheckPrice_Lob: Float
+    sbcheckStatus_Lob: String
+    sbcheckThumbSmall_Lob: String
+    sbcheckThumbMedium_Lob: String
+    sbcheckThumbLarge_Lob: String
+    sbcheckImage_Lob: String
+    sbcheckToAddressCity: String
+    sbcheckToAddressCountry: String
+    sbcheckToAddressLine1: String
+    sbcheckToAddressLine2: String
+    sbcheckToAddressState: String
+    sbcheckToAddressZip: String
+    sbcheckToAddressCompany: String
+    sbcheckToAddressId_Lob: String
+    sbcheckToAddressName: String
+    sbcheckToAddressPhone: String
+    sbcheckTrackingCarrier: String
+    sbcheckTrackingId_Lob: String
+    sbcheckTrackingNumber: String
+}
+
+type sbcorporates {
+    sbcorporateid: Int
+    sbcorporateEbId: Int
+    sbcorporateName: String
+    sbcorporateDescriptor: String
+    sbcorporateAddress1: String
+    sbcorporateAddress2: String
+    sbcorporateCity: String
+    sbcorporateState: String
+    sbcorporateZipcode: String
+    sbcorporateLatitude: Float
+    sbcorporateLongitude: Float
+    sbcorporateWebsite: String
+    sbcorporateSbUrl: String
+    sbcorporateVideoId: String
+    sbcorporateRate: Float
+    sbcorporateLogo: String
+    sbcorporateCLPlan: Boolean
+    sbcorporateContactFName: String
+    sbcorporateContactLName: String
+    sbcorporateContactEmail: String
+    sbcorporateContactPhone: String
+    sbcorporatePixel: String
+    sbcorporateNotes: String
+    sbcorporateActive: Boolean
+    sbcorporateTopBarText: String
+    sbcorporateHeroHeader: String
+    sbcorporateHeroText: String
+    sbcorporateHowItWorksHeader: String
+    sbcorporateHowItWorksText: String
+    sbcorporateHowItWorksBox1Text: String
+    sbcorporateHowItWorksBox2Text: String
+    sbcorporateHowItWorksBox3Text: String
+    sbcorporatePriceDescriptorHeader: String
+    sbcorporatePriceDescriptorSubheader: String
+    sbcorporatePriceDescriptorText: String
+    sbcorporateCostOverlayButton: Boolean
+    sbcorporateCostOverlayText: String
+    sbcorporateOfferType: String
+}
+
+type sbdoctorGroups {
+    doctorGroupId: Int
+    doctorGroupName: String
+    doctorGroupInitials: String
+    doctorGroupAccount: String
+    doctorGroupIconColor: String
+    doctorGroupIconFontColor: String
+}
+
+type sbdoctorPayments {
+    sbdoctorPaymentId: Int
+    sbdoctorPaymentDate: String
+    sbdoctorTeamId: Int
+    sbdoctorId: Int
+    sbpatientid: Int
+    sbdoctorPaymentExam: Float 
+    sbdoctorPaymentRefraction: Float
+    sbdoctorPaymentFitting: Float
+    sbdoctorPaymentOther: Float
+    sbdoctorPaymentOtherNotes: String
+    sbdoctorPaymentDiscount: Float
+    sbdoctorPaymentTotal: Float
+    sbdoctorPaymentReceipt: String
+    sbdoctorPaymentReceiptDate: String
+}
+
+type sbdoctorReviews {
+    sbdoctorReviewId: Int
+    sbdoctorId: Int
+    sbpatientId: Int
+    sbpatientRating: Int
+    sbpatientReview: String
+    sbteammemberId: Int
+    sbteamRating: Int
+    sbteamReview: String
+}
+
+type sbdoctors {
+    doctorId: Int
+    doctorSbId: String 
+    doctorImdId: String
+    doctorEditedFlag: Boolean
+    doctorFname: String
+    doctorMname: String
+    doctorLname: String
+    doctorSuffix: String
+    doctorGender: String
+    doctorTitleCode: String
+    doctorAddress1: String
+    doctorAddress2: String
+    doctorCity: String
+    doctorState: String
+    doctorStateLong: String
+    doctorZipcode: String
+    doctorZipcode4: String
+    doctorCountry: String
+    doctorLatitude: Float
+    doctorLongitude: Float
+    doctorMailFips: String
+    doctorMailSCF: String
+    doctorMailCrRt: String
+    doctorMailLotCd: String
+    doctorMailDlvPbc: String
+    doctorBusinessName: String
+    doctorPartner: Boolean
+    doctorTaxID: String
+    doctorLicense: String
+    doctorWorkPhone: String
+    doctorWorkPhoneExt: String
+    doctorFax: String
+    doctorMobilePhone: String
+    doctorMobileAlerts: Boolean
+    doctorEmail: String
+    doctorEmailUpdates: String
+    doctorEmailUpdatesContact: String
+    doctorEmailVerification: String
+    doctorEmailVerificationContact: String
+    doctorEmailExpExam: String
+    doctorEmailExpExamContact: String
+    doctorWebsite: String
+    doctorMsgPref: String
+    doctorGroup: Int
+    doctorPreferred: Boolean
+    doctorBookedAt: Boolean
+    doctorHidden: Boolean
+    doctorUpdateDate: String
+    doctorUpdateBy: String
+    doctorUpdateIp: String
+    doctorAgreementSentDate: String
+    doctorAgreementSentTo: String
+    doctorAgreementDate: String
+    doctorAgreementIp: String
+    doctorGeneralNotes: String
+    doctorQuoteOtherNotes: String
+    createdAt: String
+    updatedAt: String
+    doctorBlocklist: Boolean
+    doctorQuoteExam: Float
+    doctorQuoteRefraction: Float
+    doctorQuoteFitting: Float
+    doctorQuoteOther: Float
+}
+
+type sbdoctors_backup {
+    doctorId: Int
+    doctorSbId: String 
+    doctorImdId: String
+    doctorEditedFlag: Boolean
+    doctorFname: String
+    doctorMname: String
+    doctorLname: String
+    doctorSuffix: String
+    doctorGender: String
+    doctorTitleCode: String
+    doctorAddress1: String
+    doctorAddress2: String
+    doctorCity: String
+    doctorState: String
+    doctorStateLong: String
+    doctorZipcode: String
+    doctorZipcode4: String
+    doctorCountry: String
+    doctorMailFips: String
+    doctorMailSCF: String
+    doctorMailCrRt: String
+    doctorMailLotCd: String
+    doctorMailDlvPbc: String
+    doctorBusinessName: String
+    doctorPartner: Boolean
+    doctorTaxID: String
+    doctorLicense: String
+    doctorWorkPhone: String
+    doctorWorkPhoneExt: String
+    doctorFax: String
+    doctorMobilePhone: String
+    doctorMobileAlerts: Boolean
+    doctorEmail: String
+    doctorEmailUpdates: String
+    doctorEmailUpdatesContact: String
+    doctorEmailVerification: String
+    doctorEmailVerificationContact: String
+    doctorEmailExpExam: String
+    doctorEmailExpExamContact: String
+    doctorHidden: Boolean
+    doctorUpdateDate: String
+    doctorUpdateBy: String
+    doctorUpdateIp: String
+    doctorAgreementSentDate: String
+    doctorAgreementSentTo: String
+    doctorAgreementDate: String
+    doctorAgreementIp: String
+}
+
+type sbecps {
+    doctorId: Int
+    ecpId: Int
+    ecpFirstname: String
+    ecpLastname: String
+    ecpEmail: String
+    ecpPassword: String
+    ecpActive: Boolean
+    ecpLastSignIn: String
+    ecpUserAgent: String
+    ecpBrowserName: String
+    ecpBrowserVersion: String
+    ecpEngineName: String
+    ecpEngineVersion: String
+    ecpPlatformName: String
+    ecpPlatformType: String
+    ecpPlatformVersion: String
+}
+
+type sbinvestorgroups {
+    sbinvestorgroupid: Int
+    sbinvestorgroup_name: String
+    sbinvestorgroup_active: Boolean
+}
+
+type sbinvestors {
+    sbinvestorid: Int
+    sbinvestorgroupid: Int
+    sbinvestor_firstname: String
+    sbinvestor_lastname: String
+    sbinvestor_email: String
+    sbinvestor_phone: String
+    sbinvestor_company: String
+    sbinvestor_location: String
+    sbinvestor_notes: String
+    sbinvestor_investor: Boolean
+    sbinvestor_active: Boolean
+    sbinvestor_lastoutreach: String
+}
+
+type sblogs {
+    sblogId: Int
+    sblogSubscriberId: Int
+    sblogPatientId: Int
+    sblogDate: String
+    sblogBy: String
+    sblogIp: String 
+    sblogSessionId: String
+    sblogUpdate: String
+}
+
+type sblogs_ecp {
+    sblogId: Int
+    sblogEcpId: Int
+    sblogDate: String
+    sblogBy: String
+    sblogIp: String
+    sblogSessionId: String
+    sblogUpdate: String
+}
+
+type sblogs_team {
+    sblogId: Int
+    sblogTeamId: Int
+    sblogDate: String
+    sblogBy: String
+    sblogIp: String
+    sblogSessionId: String
+    sblogUpdate: String
+    sblogPatientId: Int
+}
+
+type sborders {
+    orderId: Int
+    sborderId: String
+    orderInsertDate: String
+    oogporderId: String
+    orderLegacyMember: Boolean
+    patientid: Int
+    subscriberid: Int
+    patientDocId: Int
+    patientRproductId: Int
+    patientRproductName: String
+    patientRpwr: String
+    patientRpwrsign: String
+    patientRbc: String
+    patientRdia: String
+    patientRcyl: String
+    patientRaxis: String
+    patientRadd: String
+    patientRcolor: String
+    patientRupc: String
+    patientRqty: Int
+    patientRprice: Float
+    patientRpriceOOGP: Float
+    patientLproductId: Int
+    patientLproductName: String
+    patientLpwr: String
+    patientLpwrsign: String
+    patientLbc: String
+    patientLdia: String
+    patientLcyl: String
+    patientLaxis: String
+    patientLadd: String
+    patientLcolor: String
+    patientLupc: String
+    patientLqty: Int
+    patientLprice: Float
+    patientLpriceOOGP: Float
+    orderProcessed: String
+    orderApproved: Boolean
+    transactionId: Int
+    requestedDeliveryDate: String
+    orderDelayedUntil: String
+    orderDelayedReason: String
+    orderShipOvernightOverride: Boolean
+    orderShipped: Boolean
+    orderShipDate: String
+    orderShipWeight: String
+    orderShipMethod: String
+    orderShipCarrier: String
+    orderShipTracking: String
+    orderShipStatus: String
+    orderShipStatusError: String
+    orderShipFromCity: String
+    orderShipFromState: String
+    orderShipFromZipcode: String
+    orderShipFromCountry: String
+    orderShipToCity: String
+    orderShipToState: String
+    orderShipToZipcode: String
+    orderShipToCountry: String
+    orderScheduledDeliveryDate: String
+    orderReceived: Boolean
+    orderReceivedDate: String
+    orderReceivedBy: String
+    orderReceivedNotes: String
+    orderDeliveryConfirmationSent: Boolean
+    orderShippingTotal: Float
+    orderInsurClaimRequested: Boolean
+    orderInsurClaimSent: Boolean
+    orderInsurClaimSentDate: String
+    orderTotalMargin: Float
+    orderDoctorPaid: Boolean
+    orderDoctorCheckId: Int
+    orderOOGPPaid: Boolean
+    orderOOGPPaidDate: String
+    orderOOGPCheckId: Int
+    awsOrderId: String
+    orderProvider: String
+    createdAt: String
+    updatedAt: String
+  }
+
+
+type sbpageloadlogs {
+    sbpageloadlogid: Int
+    sbpageloaddate: String
+    sbpageloadtime: Int
+    sbpageloadurl: String
+    sbpageloadip: String
+    sbpageloadrefer: String
+  }
+
+type sbpaidAdCampaignGroups {
+    paidAdCampaignGroupId: Int
+    paidAdCampaignGroupName: String
+    paidAdCampaignGroupNotes: String
+}
+
+type sbpaidAdCampaignSubGroups {
+    paidAdCampaignSubGroupId: Int
+    paidAdCampaignGroupId: Int
+    paidAdCampaignSubGroupName: String
+    paidAdCampaignSubGroupNotes: String
+}
+
+type sbpaidAdCampaigns {
+    paidAdCampaignId: Int
+    paidAdCampaignDate: String
+    paidAdCampaignGroupId: Int
+    paidAdCampaignSubGroupId: Int
+    paidAdCampaignAmt: Float
+}
+
+type sbpatientCancelHistory {
+    sbpatientCancelHistoryId: Int
+    sbpatientId: Int
+    sbpatientCancelReasonId: Int
+    sbpatientCancelDetails: String
+    sbpatientCancelDate: String
+    sbTeamMemberId: Int
+  }
+
+type sbpatientEmails {
+    patientEmailId: Int
+    teamId: Int
+    patientId: Int
+    patientEmailDate: String
+    patientEmailSubject: String
+    patientEmailMsg: String
+    patientEmailType: String
+}
+
+type sbpatientRenewalNoWhys {
+    sbpatientRenewalNoWhyId: Int
+    sbpatientRenewalNoWhyLabel: String
+    sbpatientRenewalNoWhyLabelHidden: Boolean
+}
+
+type sbpatientRenewals {
+    sbpatientRenewalId: Int 
+    sbpatientRenewalPatientId: Int
+    sbpatientRenewalTriggerDate: String
+    sbpatientRenewalEmail1Date: String
+    sbpatientRenewalEmail1Viewed: String
+    sbpatientRenewalText1Date: String
+    sbpatientRenewalEmail2Date: String
+    sbpatientRenewalEmail2Viewed: String
+    sbpatientRenewalText2Date: String
+    sbpatientRenewalRoboCall: String
+    sbpatientRenewalYes: String
+    sbpatientRenewalPing: String
+    sbpatientRenewalNo: String
+    sbpatientRenewalNoWhyId: Int
+    sbpatientRenewalNoWhyExpanded: String
+}
+
+type sbpatientYears {
+    sbpatientYearId: Int
+    sbpatientId: Int
+    sbpatientStartDate: String
+    sbpatientEndDate: String
+    createdAt: String
+    updatedAt: String
+}
+
+type sbpatients {
+  patientid: Int
+  patientSbId: String
+  subscriberId: Int
+  patientAddDate: AWSDateTime
+  patientSubscribeDate: AWSDateTime
+  patientAffiliate: String
+  patientInOfficeId: Int
+  patientReferCorporateId: Int
+  patientReferShareId: Int
+  patientFamilyMember: Boolean
+  patientUniqueShareId: String
+  patientExamFunnel: Boolean
+  patientExamFunnelStep: Int
+  patientMemberRate: Float
+  patientMemberRateOverride: Float
+  patientMemberRateOverrideExp: String
+  patientLensesPerWeek: Int
+  patientDeliveryCycle: Int
+  patientNextMonthlyCharge: AWSDateTime
+  patientPreviousChargeStatus: Boolean
+  patient3dayPaymentAlertViewed: AWSDateTime
+  patient1dayPaymentAlertViewed: AWSDateTime
+  patientFailedChargeAttempts: Int
+  patientFailedChargeReceiptViewed: AWSDateTime
+  patientCollectionLetter1Sent: AWSDateTime
+  patientCollectionLetter1Received: AWSDateTime
+  patientCollectionLetter1Pdf: String
+  patientCollectionLetter2Sent: AWSDateTime
+  patientCollectionLetter2Received: AWSDateTime
+  patientCollectionLetter2Message: String
+  patientCollectionLetter2Tracking: String
+  patientCollectionLetter2Report: String
+  patientCollectionLetter2Pdf: String
+  patientCollectionLetter3Sent: AWSDateTime
+  patientCollectionLetter3Received: AWSDateTime
+  patientCollectionLetter3Message: String
+  patientCollectionLetter3Tracking: String
+  patientCollectionLetter3Report: String
+  patientCollectionLetter3Pdf: String
+  patientCollectionException: String
+  patientSentToCollections: String
+  patientSettled: Boolean
+  patientSettledDate: AWSDateTime
+  patientSettledAmount: Float
+  patientDailiesWearer: Boolean
+  patientLensType: Int
+  patientWearsContacts: Int
+  patientHasPrescription: Boolean
+  patientSignupApptWhen: String
+  patientSignupApptDay1: String
+  patientSignupApptFrom1: String
+  patientSignupApptTo1: String
+  patientSignupApptDay2: String
+  patientSignupApptFrom2: String
+  patientSignupApptTo2: String
+  patientSignupApptDay3: String
+  patientSignupApptFrom3: String
+  patientSignupApptTo3: String
+  patientSignupApptWhere: String
+  patientSignupApptWhereAddress: String
+  patientSignupApptWhereCity: String
+  patientSignupApptWhereState: String
+  patientSignupApptWhereZipcode: String
+  patientSignupApptPreferred: String
+  patientSignupComments: String
+  patientNewTeamMember: Int
+  patientNewFollowUpPing: AWSDateTime
+  patientNewFollowUpPingSent: AWSDateTime
+  patientNewFollowUpPingViewed: AWSDateTime
+  patientNewFollowUpPingClicked: AWSDateTime
+  patientNewFollowUpPingClickedWhat: String
+  patientNewHelloMsg: AWSDateTime
+  patientNewHelloMsgViewed: AWSDateTime
+  patientNewHelloMsgClicked: AWSDateTime
+  patientNewHelloMsgFollow1: AWSDateTime
+  patientNewHelloMsgFollow1Viewed: AWSDateTime
+  patientNewHelloMsgFollow1Clicked: AWSDateTime
+  patientNewHelloMsgFollow1ClickedWhat: String
+  patientNewHelloMsgFollow2: AWSDateTime
+  patientNewHelloMsgFollow2Viewed: AWSDateTime
+  patientNewHelloMsgFollow2Clicked: AWSDateTime
+  patientNewHelloMsgFollow2ClickedWhat: AWSDateTime
+  patientNewBooking: AWSDateTime
+  patientNewBookingViewed: AWSDateTime
+  patientNewAppt: AWSDateTime
+  patientNewApptTimeZone: String
+  patientNewApptNotesString: String
+  patientNewApptNoteToPatient: String
+  patientNewApptConf: AWSDateTime
+  patientNewApptConfViewed: AWSDateTime
+  patientNewApptConfFollow1: AWSDateTime
+  patientNewApptConfFollow1Viewed: AWSDateTime
+  patientNewApptConfFollow2: AWSDateTime
+  patientNewApptConfFollow2Viewed: AWSDateTime
+  patientNewApptReschedule: Boolean
+  patientNewApptApproved: AWSDateTime
+  patientNewApptRemind3day: AWSDateTime
+  patientNewApptRemind3dayViewed: AWSDateTime
+  patientNewApptRemind1day: AWSDateTime
+  patientNewApptRemind1dayViewed: AWSDateTime
+  patientNewApptPostExam: AWSDateTime
+  patientNewApptPostExamViewed: AWSDateTime
+  patientNewDocLetterSent: AWSDateTime
+  patientNewDocLetterFaxed: AWSDateTime
+  patientNewDocLetterPdf: String
+  patientNewDocLetterViewed: AWSDateTime
+  patientNewPaymentRequest: AWSDateTime
+  patientNewPaymentRequestViewed: AWSDateTime
+  patientNewSbPaid: AWSDateTime
+  patientNewDocQuoteExam: Float
+  patientNewDocQuoteRefraction: Float
+  patientNewDocQuoteFitting: Float
+  patientNewDocQuoteOther: Float
+  patientNewDocQuoteOtherNotes: String
+  patientNewDocPayInfoProvided: AWSDateTime
+  patientNewDocPayInfoProvidedTo: String
+  patientNewDocPayReceiptLogged: Boolean
+  patientNewGeneralNotes: String
+  patientFirstname: String
+  patientMiddlename: String
+  patientLastname: String
+  patientSuffix: String
+  patientDob: AWSDateTime
+  patientSex: String
+  patientDAddress1: String
+  patientDAddress2: String
+  patientDCity: String
+  patientDState: String
+  patientDZipcode: String
+  patientDCountry: String
+  patientDLatitude: Float
+  patientDLongitude: Float
+  patientDEmail: String
+  patientDEmailNotify: Boolean
+  patientDMobile: String
+  patientDMobileNotify: Boolean
+  patientDNextDate: String
+  patientDNextDateOvernight: Boolean
+  patientDocId: Int
+  patientDocName: String
+  patientDocCity: String
+  patientDocState: String
+  patientDocPhone: String
+  patientDocFax: String
+  patientDocContact: String
+  patientDocContactEmail: String
+  patientRxImg: String @deprecated(reason: "Field is deprecated!")
+  patientRproductId: Int @deprecated(reason: "Field is deprecated!")
+  patientRproductName: String @deprecated(reason: "Field is deprecated!")
+  patientRpwr: String @deprecated(reason: "Field is deprecated!")
+  patientRpwrsign: String @deprecated(reason: "Field is deprecated!")
+  patientRbc: String @deprecated(reason: "Field is deprecated!")
+  patientRdia: String @deprecated(reason: "Field is deprecated!")
+  patientRcyl: String @deprecated(reason: "Field is deprecated!")
+  patientRaxis: String @deprecated(reason: "Field is deprecated!")
+  patientRadd: String @deprecated(reason: "Field is deprecated!")
+  patientRcolor: String @deprecated(reason: "Field is deprecated!")
+  patientRupc: String @deprecated(reason: "Field is deprecated!")
+  patientRqty: Int @deprecated(reason: "Field is deprecated!")
+  patientRprice: Float @deprecated(reason: "Field is deprecated!")
+  patientLproductId: Int @deprecated(reason: "Field is deprecated!")
+  patientLproductName: String @deprecated(reason: "Field is deprecated!")
+  patientLpwr: String @deprecated(reason: "Field is deprecated!")
+  patientLpwrsign: String @deprecated(reason: "Field is deprecated!")
+  patientLbc: String @deprecated(reason: "Field is deprecated!")
+  patientLdia: String @deprecated(reason: "Field is deprecated!")
+  patientLcyl: String @deprecated(reason: "Field is deprecated!")
+  patientLaxis: String @deprecated(reason: "Field is deprecated!")
+  patientLadd: String @deprecated(reason: "Field is deprecated!")
+  patientLcolor: String @deprecated(reason: "Field is deprecated!")
+  patientLupc: String @deprecated(reason: "Field is deprecated!")
+  patientLqty: Int @deprecated(reason: "Field is deprecated!")
+  patientLprice: Float @deprecated(reason: "Field is deprecated!")
+  patientRxVerified: Boolean @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedDate: AWSDateTime @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedBy: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedMethod: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedProof: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedIP: String @deprecated(reason: "Field is deprecated!")
+  patientRxExpires: String @deprecated(reason: "Field is deprecated!")
+  patientInsurProviderId: Int
+  patientInsurProviderOther: String
+  patientInsurGroupId: String
+  patientInsurSubscriberId: String
+  patientInsurMemberId: String
+  patientInsurMemberRelation: String
+  patientInsurSubFname: String
+  patientInsurSubMname: String
+  patientInsurSubLname: String
+  patientInsurSubSuffix: String
+  patientInsurSubDob: String
+  patientInsurSubAddress1: String
+  patientInsurSubAddress2: String
+  patientInsurSubCity: String
+  patientInsurSubState: String
+  patientInsurSubZipcode: String
+  patientInsurSubCountry: String
+  patientInsurSubPhone: String
+  patientInsurSubSignature: String
+  patientInsurSubSignatureImg: String
+  patientInsurSubSignatureJson: String
+  patientInsurSubAgree: Boolean
+  patientTosDate: AWSDateTime
+  patientTosIp: String
+  patientActive: Boolean
+  patientInactiveDate: AWSDateTime
+  patientInactiveCode: Int
+  patientActiveReason: String
+  patientUnsubscribed: Boolean
+  patientUnsubscribedDate: String
+  patientSignupReferrer: String
+  patientUpdateDate: AWSDateTime
+  patientUpdateBy: String
+  patientUpdateIp: String
+  patientSetupStep: Int
+  patientUserAgent: String
+  patientBrowserName: String
+  patientBrowserVersion: String
+  patientEngineName: String
+  patientEngineVersion: String
+  patientPlatformName: String
+  patientPlatformType: String
+  patientPlatformVersion: String
+  createdAt: String
+  updatedAt: String
+  visionGroupId: Int
+  Prescription: Prescription
+  Receipts: [Receipt]!
+  "Exam appointments that the memeber has been scheduled for. Ordered by date DESC"
+  Exams: [Exam]!
+}
+
+input UpdatePatientsInput {
+  id: Int!
+  "used to trigger a patient delivery in the next three business days"
+  nextDelivery: Boolean
+  patientAddDate: AWSDateTime
+  patientSubscribeDate: AWSDateTime
+  patientAffiliate: String
+  patientInOfficeId: Int
+  patientReferCorporateId: Int
+  patientReferShareId: Int
+  patientFamilyMember: Boolean
+  patientUniqueShareId: String
+  patientExamFunnel: Boolean
+  patientExamFunnelStep: Int
+  patientMemberRate: Float
+  patientMemberRateOverride: Float
+  patientMemberRateOverrideExp: String
+  patientLensesPerWeek: Int
+  patientDeliveryCycle: Int
+  patientNextMonthlyCharge: AWSDateTime
+  patientPreviousChargeStatus: Boolean
+  patient3dayPaymentAlertViewed: AWSDateTime
+  patient1dayPaymentAlertViewed: AWSDateTime
+  patientFailedChargeAttempts: Int
+  patientFailedChargeReceiptViewed: AWSDateTime
+  patientCollectionLetter1Sent: AWSDateTime
+  patientCollectionLetter1Received: AWSDateTime
+  patientCollectionLetter1Pdf: String
+  patientCollectionLetter2Sent: AWSDateTime
+  patientCollectionLetter2Received: AWSDateTime
+  patientCollectionLetter2Message: String
+  patientCollectionLetter2Tracking: String
+  patientCollectionLetter2Report: String
+  patientCollectionLetter2Pdf: String
+  patientCollectionLetter3Sent: AWSDateTime
+  patientCollectionLetter3Received: AWSDateTime
+  patientCollectionLetter3Message: String
+  patientCollectionLetter3Tracking: String
+  patientCollectionLetter3Report: String
+  patientCollectionLetter3Pdf: String
+  patientCollectionException: String
+  patientSentToCollections: String
+  patientSettled: Boolean
+  patientSettledDate: AWSDateTime
+  patientSettledAmount: Float
+  patientDailiesWearer: Boolean
+  patientLensType: Int
+  patientWearsContacts: Int
+  patientHasPrescription: Boolean
+  patientSignupApptWhen: String
+  patientSignupApptDay1: String
+  patientSignupApptFrom1: String
+  patientSignupApptTo1: String
+  patientSignupApptDay2: String
+  patientSignupApptFrom2: String
+  patientSignupApptTo2: String
+  patientSignupApptDay3: String
+  patientSignupApptFrom3: String
+  patientSignupApptTo3: String
+  patientSignupApptWhere: String
+  patientSignupApptWhereAddress: String
+  patientSignupApptWhereCity: String
+  patientSignupApptWhereState: String
+  patientSignupApptWhereZipcode: String
+  patientSignupApptPreferred: String
+  patientSignupComments: String
+  patientNewTeamMember: Int
+  patientNewFollowUpPing: AWSDateTime
+  patientNewFollowUpPingSent: AWSDateTime
+  patientNewFollowUpPingViewed: AWSDateTime
+  patientNewFollowUpPingClicked: AWSDateTime
+  patientNewFollowUpPingClickedWhat: String
+  patientNewHelloMsg: AWSDateTime
+  patientNewHelloMsgViewed: AWSDateTime
+  patientNewHelloMsgClicked: AWSDateTime
+  patientNewHelloMsgFollow1: AWSDateTime
+  patientNewHelloMsgFollow1Viewed: AWSDateTime
+  patientNewHelloMsgFollow1Clicked: AWSDateTime
+  patientNewHelloMsgFollow1ClickedWhat: String
+  patientNewHelloMsgFollow2: AWSDateTime
+  patientNewHelloMsgFollow2Viewed: AWSDateTime
+  patientNewHelloMsgFollow2Clicked: AWSDateTime
+  patientNewHelloMsgFollow2ClickedWhat: AWSDateTime
+  patientNewBooking: AWSDateTime
+  patientNewBookingViewed: AWSDateTime
+  patientNewAppt: AWSDateTime
+  patientNewApptTimeZone: String
+  patientNewApptNotesString: String
+  patientNewApptNoteToPatient: String
+  patientNewApptConf: AWSDateTime
+  patientNewApptConfViewed: AWSDateTime
+  patientNewApptConfFollow1: AWSDateTime
+  patientNewApptConfFollow1Viewed: AWSDateTime
+  patientNewApptConfFollow2: AWSDateTime
+  patientNewApptConfFollow2Viewed: AWSDateTime
+  patientNewApptReschedule: Boolean
+  patientNewApptApproved: AWSDateTime
+  patientNewApptRemind3day: AWSDateTime
+  patientNewApptRemind3dayViewed: AWSDateTime
+  patientNewApptRemind1day: AWSDateTime
+  patientNewApptRemind1dayViewed: AWSDateTime
+  patientNewApptPostExam: AWSDateTime
+  patientNewApptPostExamViewed: AWSDateTime
+  patientNewDocLetterSent: AWSDateTime
+  patientNewDocLetterFaxed: AWSDateTime
+  patientNewDocLetterPdf: String
+  patientNewDocLetterViewed: AWSDateTime
+  patientNewPaymentRequest: AWSDateTime
+  patientNewPaymentRequestViewed: AWSDateTime
+  patientNewSbPaid: AWSDateTime
+  patientNewDocQuoteExam: Float
+  patientNewDocQuoteRefraction: Float
+  patientNewDocQuoteFitting: Float
+  patientNewDocQuoteOther: Float
+  patientNewDocQuoteOtherNotes: String
+  patientNewDocPayInfoProvided: AWSDateTime
+  patientNewDocPayInfoProvidedTo: String
+  patientNewDocPayReceiptLogged: Boolean
+  patientNewGeneralNotes: String
+  patientFirstname: String
+  patientMiddlename: String
+  patientLastname: String
+  patientSuffix: String
+  patientDob: AWSDateTime
+  patientSex: String
+  patientDAddress1: String
+  patientDAddress2: String
+  patientDCity: String
+  patientDState: String
+  patientDZipcode: String
+  patientDCountry: String
+  patientDLatitude: Float
+  patientDLongitude: Float
+  patientDEmail: String
+  patientDEmailNotify: Boolean
+  patientDMobile: String
+  patientDMobileNotify: Boolean
+  patientDNextDate: String
+  patientDNextDateOvernight: Boolean
+  patientDocId: Int
+  patientDocName: String
+  patientDocCity: String
+  patientDocState: String
+  patientDocPhone: String
+  patientDocFax: String
+  patientDocContact: String
+  patientDocContactEmail: String
+  patientRxImg: String @deprecated(reason: "Field is deprecated!")
+  patientRproductId: Int @deprecated(reason: "Field is deprecated!")
+  patientRproductName: String @deprecated(reason: "Field is deprecated!")
+  patientRpwr: String @deprecated(reason: "Field is deprecated!")
+  patientRpwrsign: String @deprecated(reason: "Field is deprecated!")
+  patientRbc: String @deprecated(reason: "Field is deprecated!")
+  patientRdia: String @deprecated(reason: "Field is deprecated!")
+  patientRcyl: String @deprecated(reason: "Field is deprecated!")
+  patientRaxis: String @deprecated(reason: "Field is deprecated!")
+  patientRadd: String @deprecated(reason: "Field is deprecated!")
+  patientRcolor: String @deprecated(reason: "Field is deprecated!")
+  patientRupc: String @deprecated(reason: "Field is deprecated!")
+  patientRqty: Int @deprecated(reason: "Field is deprecated!")
+  patientRprice: Float @deprecated(reason: "Field is deprecated!")
+  patientLproductId: Int @deprecated(reason: "Field is deprecated!")
+  patientLproductName: String @deprecated(reason: "Field is deprecated!")
+  patientLpwr: String @deprecated(reason: "Field is deprecated!")
+  patientLpwrsign: String @deprecated(reason: "Field is deprecated!")
+  patientLbc: String @deprecated(reason: "Field is deprecated!")
+  patientLdia: String @deprecated(reason: "Field is deprecated!")
+  patientLcyl: String @deprecated(reason: "Field is deprecated!")
+  patientLaxis: String @deprecated(reason: "Field is deprecated!")
+  patientLadd: String @deprecated(reason: "Field is deprecated!")
+  patientLcolor: String @deprecated(reason: "Field is deprecated!")
+  patientLupc: String @deprecated(reason: "Field is deprecated!")
+  patientLqty: Int @deprecated(reason: "Field is deprecated!")
+  patientLprice: Float @deprecated(reason: "Field is deprecated!")
+  patientRxVerified: Boolean @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedDate: AWSDateTime @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedBy: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedMethod: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedProof: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedIP: String @deprecated(reason: "Field is deprecated!")
+  patientRxExpires: String @deprecated(reason: "Field is deprecated!")
+  patientInsurProviderId: Int
+  patientInsurProviderOther: String
+  patientInsurGroupId: String
+  patientInsurSubscriberId: String
+  patientInsurMemberId: String
+  patientInsurMemberRelation: String
+  patientInsurSubFname: String
+  patientInsurSubMname: String
+  patientInsurSubLname: String
+  patientInsurSubSuffix: String
+  patientInsurSubDob: String
+  patientInsurSubAddress1: String
+  patientInsurSubAddress2: String
+  patientInsurSubCity: String
+  patientInsurSubState: String
+  patientInsurSubZipcode: String
+  patientInsurSubCountry: String
+  patientInsurSubPhone: String
+  patientInsurSubSignature: String
+  patientInsurSubSignatureImg: String
+  patientInsurSubSignatureJson: String
+  patientInsurSubAgree: Boolean
+  patientTosDate: AWSDateTime
+  patientTosIp: String
+  patientActive: Boolean
+  patientInactiveDate: AWSDateTime
+  patientInactiveCode: Int
+  patientActiveReason: String
+  patientUnsubscribed: Boolean
+  patientUnsubscribedDate: String
+  patientSignupReferrer: String
+  patientUpdateDate: AWSDateTime
+  patientUpdateBy: String
+  patientUpdateIp: String
+  patientSetupStep: Int
+  patientUserAgent: String
+  patientBrowserName: String
+  patientBrowserVersion: String
+  patientEngineName: String
+  patientEngineVersion: String
+  patientPlatformName: String
+  patientPlatformType: String
+  patientPlatformVersion: String
+}
+
+
+type sbproductBrands {
+    sbproductBrandID: Int
+    sbproductBrandTitle: String
+    sbproductBrandDesc: String
+    sbproductBrandGridValue: String
+    sbproductBrandSeq: Int
+    sbproductBrandRGB: String
+    sbproductBrandHide: Boolean
+}
+
+type sbproducts {
+    sbproductID: Int
+    sbproductBrandID: Int
+    sbproductWear: String
+    sbproductPerPack: Int
+    sbproductColor: Boolean
+    sbproductSeq: Int
+    sbproductTitle: String
+    sbproductDesc: String
+    sbproductDBTable: String
+    sbproductImg: String
+    sbproductImgThumb: String
+    sbproductType: String
+    sbproductTypeLabel: String
+    sbproductURL: String
+    sbproductUPP: Boolean
+    sbproductPrice: Float
+    sbproductPrice1800: Float
+    sbproductPriceOOGP: Float
+    sbproductHide: Boolean
+}
+
+type sbpromoClasses {
+    promoClassId: Int 
+    promoClassName: String 
+    promoClassInactive: Boolean
+}
+
+type sbpromoCodes {
+    promoCodeId: Int 
+    promoNetworkId: Int 
+    promoCodeLimits: Int 
+    promoCode: String 
+    promoCodeDesc: String
+    promoCodeUrl: String
+    promoCodeDollarValue: Float 
+    promoCodePercentValue: Float
+    promoCodeExpDate: String
+    promoCodeOnetimeUsed: Boolean
+    promoCodeInactive: Boolean
+}
+
+type sbpromoNetworks {
+    promoNetworkId: Int 
+    promoClassId: Int
+    promoNetworkName: String 
+    promoNetworkDesc: String
+    promoNetworkInactive: Boolean
+}  
+
+type sbpromoTracking {
+    promoTrackingId: Int
+    promoCodeId: Int
+    promoPatientId: Int
+    promoTrackingDate: String
+    promoTrackingTransactionId: Int
+}
+
+type sbproviders {
+    providerID: Int
+    providerName: String
+    providerVisionAffiliate: String
+    providerWebsite: String
+    providerFax: String
+    providerMailAttn: String
+    providerMailAddress1: String
+    providerMailAddress2: String
+    providerMailCity: String
+    providerMailState: String
+    providerMailZipcode: String
+    providerPrintForm: String
+    providerEmail: String
+    providerPhone: String
+    providerFormURL: String
+    providerActive: Boolean
+    providerUpdateDate: String
+    providerUpdateBy: String
+    providerUpdateIp: String
+}
+
+type sbqualifierGroups {
+    sbqualifierGroupId: Int
+    sbqualifierGroupName: String
+}   
+
+type sbqualifiers {
+    sbqualifierId: Int
+    sbqualifierGroupId: Int
+    sbqualifierDate: String
+    sbqualifierResponse: String
+    sbqualifierRemindMonth: String
+    sbqualifierRemindEmail: String
+    sbqualifierMobile: Boolean
+    sbqualifierIP: String
+    sbqualifierBrowserAgent: String
+    sbqualifierToken: String
+}
+
+type sbshares {
+    shareid: Int
+    patientid: Int
+    shareAdded: String
+    shareValue: Float
+    shareUsed: Boolean
+    shareUsedDate: String
+    transactionId: Int
+    createdAt: String
+    updatedAt: String
+}
+
+type sbspendChannels {
+    spendChannelId: Int
+    spendChannelName: String
+    spendChannelHidden: Boolean
+}
+
+type sbspends {
+    spendid: Int
+    spendDate: String
+    spendChannelId: Int
+    spendAmt: Float
+    spendNotes: String
+}
+
+type sbsubscribers {
+    subscriberId: Int
+    subscriberSbId: String
+    subscriberAddDate: String
+    subscriberFirstname: String
+    subscriberMiddlename: String
+    subscriberLastname: String
+    subscriberSuffix: String
+    subscriberWorkPhone: String
+    subscriberWorkPhoneExt: String
+    subscriberMobilePhone: String
+    subscriberEmail: String
+    subscriberPassword: String
+    subscriberCCname: String
+    subscriberCCnumber: String
+    subscriberCCexpmo: String
+    subscriberCCexpyr: String
+    subscriberCCcvv: String
+    subscriberCCtype: String
+    subscriberCCzipcode: String
+    subscriberActive: Boolean
+    subscriberCancelled: Boolean
+    subscriberCancelledDate: String
+    subscriberCancelledCode: Int
+    subscriberCancelledReason: String
+    subscriberPrId: String
+    subscriberTosDate: String
+    subscriberTosIp: String
+    subscriberUpdateDate: String
+    subscriberUpdateBy: String
+    subscriberUpdateIp: String
+    subscriberLastSignIn: String
+    subscriberLastSignInIp: String
+    subscriberUserAgent: String
+    subscriberBrowserName: String
+    subscriberBrowserVersion: String
+    subscriberEngineName: String
+    subscriberEngineVersion: String
+    subscriberPlatformName: String
+    subscriberPlatformType: String
+    subscriberPlatformVersion: String
+    createdAt: String
+    updatedAt: String
+}
+
+type sbteamGroups {
+    groupId: Int 
+    groupName: String
+    groupDescription: String
+}
+
+type sbteamGroupsMembers {
+    groupsMembersId: Int
+    teamMemberId: Int!
+    groupId: Int!
+}
+
+type sbteamMemberDepts {
+    teamMemberDeptId: Int 
+    teamMemberDeptName: String
+}
+
+type sbteamUpdates {
+    sbteamUpdateId: Int
+    sbteamUpdateTitle: String
+    sbteamUpdateDesc: String
+    sbteamUpdateHTML: String
+    sbteamUpdateCreatedDate: String
+    sbteamUpdateCreatedBy: Int
+    sbteamUpdateEditedDate: String
+    sbteamUpdateEditedBy: Int
+    sbteamUpdateApprovedDate: String
+    sbteamUpdateApprovedBy: Int
+    sbteamUpdateShowDate: String
+    sbteamUpdateHidden: Boolean
+}
+
+type sbteamUpdatesLinkTable {
+    sbteamUpdatesLinkId: Int
+    sbteamUpdateId: Int
+    sbteamId: Int
+    sbteamUpdateViewConfirmDate: String
+    sbteamUpdateViewConfirmBy: Int
+    sbteamUpdateViewConfirmIp: String
+}
+
+type sbteammembers {
+  teamId: Int
+  teamFirstname: String
+  teamMiddlename: String
+  teamLastname: String
+  teamTitle: String
+  teamMemberDeptId: Int
+  teamEmail: String
+  teamMobile: String
+  teamWorkMobile: String
+  teamText: String
+  teamWorkPhone: String
+  teamPassword: String
+  teamMaster: Boolean
+  teamAdmin: Boolean
+  teamPaidAds: Boolean
+  teamCareCo: Boolean
+  teamBasicStats: Boolean
+  teamPayAdmin: Boolean
+  teamShipAdmin: Boolean
+  teamMemberExport: Boolean
+  teamInvestor: Boolean
+  teamScheduler: Boolean
+  teamAlertNewLeadE: Boolean
+  teamAlertNewLeadM: Boolean
+  teamAlertNewMemberE: Boolean
+  teamAlertNewMemberM: Boolean
+  teamActive: Boolean
+  teamLastSignIn: String
+  teamUserAgent: String
+  teamBrowserName: String
+  teamBrowserVersion: String
+  teamEngineName: String
+  teamEngineVersion: String
+  teamPlatformName: String
+  teamPlatformType: String
+  teamPlatformVersion: String
+  teamPicture: String
+  teamFinanceAdmin: Boolean
+  createdAt: String
+  updatedAt: String
+}
+
+
+type sbtransactions {
+    sbtransactionId: Int
+    subscriberId: Int
+    sbtransactionPatientId: Int
+    sbtransactionDate: String
+    sbtransactionType: String
+    sbtransactionSubTotal: Float
+    sbtransactionSalesTax: Float
+    sbtransactionTotal: Float
+    sbtransactionReceiptEmail: String
+    sbtransactionApproved: String
+    sbtransactionRespMsg: String
+    sbtransactionAuthCode: String
+    sbtransactionPnRef: String
+    sbtransactionAVSaddr: String
+    sbtransactionAVSzip: String
+    sbtransactionCVVmatch: String
+    sbtransactionIAVS: String
+    sbtransactionResult: String
+    sbtransactionAutorun: Boolean
+    createdAt: String
+    updatedAt: String
+}
+

@@ -1,0 +1,20 @@
+{
+  "semi": true,
+  "tabWidth": 2,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "overrides": [
+    {
+      "files": "bin/*.js",
+      "options": {
+        "trailingComma": "es5"
+      }
+    },
+    {
+      "files": "*.md",
+      "options": {
+        "parser": "markdown"
+      }
+    }
+  ]
+}

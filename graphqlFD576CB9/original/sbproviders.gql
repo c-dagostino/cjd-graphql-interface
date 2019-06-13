@@ -1,0 +1,21 @@
+type sbproviders {
+    providerID: Int
+    providerName: String
+    providerVisionAffiliate: String
+    providerWebsite: String
+    providerFax: String
+    providerMailAttn: String
+    providerMailAddress1: String
+    providerMailAddress2: String
+    providerMailCity: String
+    providerMailState: String
+    providerMailZipcode: String
+    providerPrintForm: String
+    providerEmail: String
+    providerPhone: String
+    providerFormURL: String
+    providerActive: Boolean
+    providerUpdateDate: String
+    providerUpdateBy: String
+    providerUpdateIp: String
+}

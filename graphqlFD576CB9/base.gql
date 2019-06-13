@@ -1,0 +1,149 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Mutation {
+  # repo: faxing-portal
+  createFax(payload: createFaxInput): Fax!
+  rejectFax(payload: RejectFaxInput!): Fax!
+  updateFax(payload: UpdateFaxInput!, id: ID!): Fax!
+
+  # repo: graphql-doctors-backend
+  "Creates a new one time use credit card for paying doctors"
+  createPaymentCard(payload: CreatePaymentCardInput): MarqetaCard!
+  "Ability to report card (Cancel, Fraud, Misplaced, Suspected Fraud, Terminate)"
+  reportPaymentCard(payload: ReportPaymentCardInput): MarqetaCard!
+  "Ability to create a vision group, practice, doctor"
+  createVisionGroup(payload: createVisionGroupInput!): VisionGroup!
+  "Ability to create practice, doctors and attach to a visionGroup"
+  createPractice(vid: Int!, payload: createPracticeInput): Practice!
+  "Ability to update existing practice information"
+  updatePractice(practiceId: Int!, payload: updatePracticeInput): Practice!
+  # "Ability to create doctor record"
+  # createDoctor(pid: Int!, payload: createDoctorInput): Doctor!
+  "Ability to update a doctor record"
+  updateDoctor(doctorId: Int!, payload: updateDoctorInput): Doctor!
+  "Ability to update a vision group record"
+  updateVisionGroup(id: Int!, payload: updateVisionGroupInput!): VisionGroup!
+  #repo: gql-exams
+  "Ability to schedule an exam"
+  scheduleExam(payload: ExamInput): Exam!
+  "Ability to update the state of an exam"
+  updateExamState(id: Int!, state: ExamState): Exam!
+  "Ability to create an appointment notes "
+  createAppointmentNotes(
+    "the appointment record id"
+    appointmentId: Int!
+    "the note we are storing"
+    note: String!
+    "the patient id this note pertains to"
+    patientId: Int!
+  ): ExamApptNotes!
+
+  # repo: graphql-events-backend
+  createFaxEvent(payload: CreateFaxEventInput!): Event!
+
+  # repo: graphql-patients-backend
+  "Pops a patient record from the timezone exam queue and assigns the patient to the CX teamId passed in the query."
+  assignPatientByTimezone(payload: AssignExamByTimezoneInput): sbpatients
+  createAccountCredit(payload: CreateAccountCreditInput): Boolean
+  createMembershipSubscription(
+    payload: CreateMembershipSubscriptionInput
+  ): Boolean
+  createPrescription(payload: PrescriptionInput): Prescription!
+  createReceipt(payload: ReceiptInput!): Receipt!
+  deleteReceipt(id: Int!): Boolean
+  updateAccountCreditCardDetails(
+    payload: UpdateAccountCreditCardInput!
+  ): Boolean
+  updatePaymentDate(payload: UpdatePaymentDateInput): Boolean
+  "Adds the ability to update the patient record"
+  updatePatient(payload: UpdatePatientsInput): sbpatients
+  "Update / override the price for a subscription either permanently or temporarily (given an expiration date)"
+  updateSubscriptionPrice(payload: UpdateSubscriptionPriceInput!): Boolean
+  voidTransaction(paymentId: String!): Boolean
+  "releaseExamPatient disassociates a sightbox team member from the patient record 'patientNewTeamMember' in the mssql"
+  releaseExamPatient(patientId: Int!): Boolean!
+  "Link a patient to a doctor"
+  linkPatientDoctor(payload: linkPatientDoctorInput): Boolean
+  "Update subscriber email and password"
+  updateSubscriberCredentials(payload: UpdateSubscriberCredentialsInput): UpdateSubscriberCredentialsResponse
+  "Save subscriber email and password"
+  createSubscriberAccount(payload: CreateSubscriberAccountInput): CreateSubscriberAccountResponse
+}
+
+type Query {
+  # repo: faxing-portal
+  getFaxById(guid: String): Fax
+  getNewFax(teamId: Int!): Fax
+  getFaxes(payload: getFaxesInput): QueryResults
+  getProcessedFax(teamId: Int!): Fax
+  processingQueueCount: Int!
+  verifiedQueueCount: Int!
+  getFaxByPatientId(patientId: Int!): [Fax!]
+
+  # repo: gql-locations
+  "Fetch latitude and longitude data for an arbitrary address string"
+  getLocationFromAddress(address: String!): LatitudeLongitude
+  "Fetch timezone information given an arbitrary latitude/longitude coordinate pair"
+  getTimezoneFromGeolocation(location: TimezoneQueryInput): TimezoneResults
+
+  # repo: graphql-doctors-backend
+  "fetch a doctor by a primary key"
+  getDoctor(doctorId: Int!): Doctor
+  "fetch a practice by primary key"
+  getPractice(practiceId: Int!): Practice
+  "update practice information"
+  updatePractice(practiceId: Int!, payload: updatePracticeInput!): Practice
+  "fetch a vision group by primary key"
+  getVisionGroup(id: Int!): VisionGroup
+  "search vision group by name"
+  searchVisionGroup(name: String!): VisionGroup
+  "search doctors in a given practice"
+  searchDoctor(
+    query: SearchInput!
+    practiceId: Int!
+    visionGroupId: Int!
+  ): SearchPayload!
+  "search practices based on address"
+  searchPractice(query: SearchInput!): SearchPayload!
+  "Search for practices within a certain distance from the provided latitude and longitude"
+  searchPracticesByGeolocation(
+    query: LocationRadiusSearchInput
+  ): [PracticeRadiusSearchResults]!
+
+  # repo: gql-exams
+  "ability to read an array of notes about an appointment"
+  readAppointmentNotes(appointmentId: Int): [ExamApptNotes]!
+
+  # repo: gql-team
+  getTeamMember(teamId: Int!): TeamMember!
+
+  # repo: graphql-patients-backend
+  "examSchedulingQueueCount queries the total number of Sightbox patients that are waiting to be scheduled for an exam."
+  examSchedulingQueueCount: ExamSchedulingQueue
+  getAccountCreditCardDetails(accountNumber: String!): AccountCreditCardDetails
+  getPaymentHistory(accountNumber: String!): PaymentHistory
+  getPrescription(patientId: Int!): Prescription
+  getPatient(patientId: Int!): sbpatients
+  getReceipt(payload: getReceiptInput): [Receipt]!
+  searchPatient(query: SearchInput!): SearchPayload!
+  searchSbPatients(query: SearchInput!): SearchPayload!
+  # repo: graphql-products-backend
+  browseProducts(query: ProductSearchInput): [ProductResults]
+  getProductsByModality(modality: ModalityInputEnum): [ProductName]
+  getProductParameters(input: getProductParametersInput): ProductParameters
+
+  validateAddress(address: String!): String
+  getPaymentCards(patientId: Int!): [MarqetaCard!]!
+  product(id: String!): ProductResults
+  products(query: ProductSearchInput): [ProductResults]
+  categories(query: ProductCategoryInput): [String]
+  inventoryStatus(upc: String!): InventoryStatusResults
+  "getBillingAccount describes a billing account from our payment processor"
+  getBillingAccount(accountNumber: String!): BillingAccount
+
+  # repo: gql-supplychain-backend
+  getOrders(query: OrderInput): [Order!]
+}

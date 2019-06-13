@@ -1,0 +1,458 @@
+type sbpatients {
+  patientid: Int
+  patientSbId: String
+  subscriberId: Int
+  patientAddDate: AWSDateTime
+  patientSubscribeDate: AWSDateTime
+  patientAffiliate: String
+  patientInOfficeId: Int
+  patientReferCorporateId: Int
+  patientReferShareId: Int
+  patientFamilyMember: Boolean
+  patientUniqueShareId: String
+  patientExamFunnel: Boolean
+  patientExamFunnelStep: Int
+  patientMemberRate: Float
+  patientMemberRateOverride: Float
+  patientMemberRateOverrideExp: String
+  patientLensesPerWeek: Int
+  patientDeliveryCycle: Int
+  patientNextMonthlyCharge: AWSDateTime
+  patientPreviousChargeStatus: Boolean
+  patient3dayPaymentAlertViewed: AWSDateTime
+  patient1dayPaymentAlertViewed: AWSDateTime
+  patientFailedChargeAttempts: Int
+  patientFailedChargeReceiptViewed: AWSDateTime
+  patientCollectionLetter1Sent: AWSDateTime
+  patientCollectionLetter1Received: AWSDateTime
+  patientCollectionLetter1Pdf: String
+  patientCollectionLetter2Sent: AWSDateTime
+  patientCollectionLetter2Received: AWSDateTime
+  patientCollectionLetter2Message: String
+  patientCollectionLetter2Tracking: String
+  patientCollectionLetter2Report: String
+  patientCollectionLetter2Pdf: String
+  patientCollectionLetter3Sent: AWSDateTime
+  patientCollectionLetter3Received: AWSDateTime
+  patientCollectionLetter3Message: String
+  patientCollectionLetter3Tracking: String
+  patientCollectionLetter3Report: String
+  patientCollectionLetter3Pdf: String
+  patientCollectionException: String
+  patientSentToCollections: String
+  patientSettled: Boolean
+  patientSettledDate: AWSDateTime
+  patientSettledAmount: Float
+  patientDailiesWearer: Boolean
+  patientLensType: Int
+  patientWearsContacts: Int
+  patientHasPrescription: Boolean
+  patientSignupApptWhen: String
+  patientSignupApptDay1: String
+  patientSignupApptFrom1: String
+  patientSignupApptTo1: String
+  patientSignupApptDay2: String
+  patientSignupApptFrom2: String
+  patientSignupApptTo2: String
+  patientSignupApptDay3: String
+  patientSignupApptFrom3: String
+  patientSignupApptTo3: String
+  patientSignupApptWhere: String
+  patientSignupApptWhereAddress: String
+  patientSignupApptWhereCity: String
+  patientSignupApptWhereState: String
+  patientSignupApptWhereZipcode: String
+  patientSignupApptPreferred: String
+  patientSignupComments: String
+  patientNewTeamMember: Int
+  patientNewFollowUpPing: AWSDateTime
+  patientNewFollowUpPingSent: AWSDateTime
+  patientNewFollowUpPingViewed: AWSDateTime
+  patientNewFollowUpPingClicked: AWSDateTime
+  patientNewFollowUpPingClickedWhat: String
+  patientNewHelloMsg: AWSDateTime
+  patientNewHelloMsgViewed: AWSDateTime
+  patientNewHelloMsgClicked: AWSDateTime
+  patientNewHelloMsgFollow1: AWSDateTime
+  patientNewHelloMsgFollow1Viewed: AWSDateTime
+  patientNewHelloMsgFollow1Clicked: AWSDateTime
+  patientNewHelloMsgFollow1ClickedWhat: String
+  patientNewHelloMsgFollow2: AWSDateTime
+  patientNewHelloMsgFollow2Viewed: AWSDateTime
+  patientNewHelloMsgFollow2Clicked: AWSDateTime
+  patientNewHelloMsgFollow2ClickedWhat: AWSDateTime
+  patientNewBooking: AWSDateTime
+  patientNewBookingViewed: AWSDateTime
+  patientNewAppt: AWSDateTime
+  patientNewApptTimeZone: String
+  patientNewApptNotesString: String
+  patientNewApptNoteToPatient: String
+  patientNewApptConf: AWSDateTime
+  patientNewApptConfViewed: AWSDateTime
+  patientNewApptConfFollow1: AWSDateTime
+  patientNewApptConfFollow1Viewed: AWSDateTime
+  patientNewApptConfFollow2: AWSDateTime
+  patientNewApptConfFollow2Viewed: AWSDateTime
+  patientNewApptReschedule: Boolean
+  patientNewApptApproved: AWSDateTime
+  patientNewApptRemind3day: AWSDateTime
+  patientNewApptRemind3dayViewed: AWSDateTime
+  patientNewApptRemind1day: AWSDateTime
+  patientNewApptRemind1dayViewed: AWSDateTime
+  patientNewApptPostExam: AWSDateTime
+  patientNewApptPostExamViewed: AWSDateTime
+  patientNewDocLetterSent: AWSDateTime
+  patientNewDocLetterFaxed: AWSDateTime
+  patientNewDocLetterPdf: String
+  patientNewDocLetterViewed: AWSDateTime
+  patientNewPaymentRequest: AWSDateTime
+  patientNewPaymentRequestViewed: AWSDateTime
+  patientNewSbPaid: AWSDateTime
+  patientNewDocQuoteExam: Float
+  patientNewDocQuoteRefraction: Float
+  patientNewDocQuoteFitting: Float
+  patientNewDocQuoteOther: Float
+  patientNewDocQuoteOtherNotes: String
+  patientNewDocPayInfoProvided: AWSDateTime
+  patientNewDocPayInfoProvidedTo: String
+  patientNewDocPayReceiptLogged: Boolean
+  patientNewGeneralNotes: String
+  patientFirstname: String
+  patientMiddlename: String
+  patientLastname: String
+  patientSuffix: String
+  patientDob: AWSDateTime
+  patientSex: String
+  patientDAddress1: String
+  patientDAddress2: String
+  patientDCity: String
+  patientDState: String
+  patientDZipcode: String
+  patientDCountry: String
+  patientDLatitude: Float
+  patientDLongitude: Float
+  patientDEmail: String
+  patientDEmailNotify: Boolean
+  patientDMobile: String
+  patientDMobileNotify: Boolean
+  patientDNextDate: String
+  patientDNextDateOvernight: Boolean
+  patientDocId: Int
+  patientDocName: String
+  patientDocCity: String
+  patientDocState: String
+  patientDocPhone: String
+  patientDocFax: String
+  patientDocContact: String
+  patientDocContactEmail: String
+  patientRxImg: String @deprecated(reason: "Field is deprecated!")
+  patientRproductId: Int @deprecated(reason: "Field is deprecated!")
+  patientRproductName: String @deprecated(reason: "Field is deprecated!")
+  patientRpwr: String @deprecated(reason: "Field is deprecated!")
+  patientRpwrsign: String @deprecated(reason: "Field is deprecated!")
+  patientRbc: String @deprecated(reason: "Field is deprecated!")
+  patientRdia: String @deprecated(reason: "Field is deprecated!")
+  patientRcyl: String @deprecated(reason: "Field is deprecated!")
+  patientRaxis: String @deprecated(reason: "Field is deprecated!")
+  patientRadd: String @deprecated(reason: "Field is deprecated!")
+  patientRcolor: String @deprecated(reason: "Field is deprecated!")
+  patientRupc: String @deprecated(reason: "Field is deprecated!")
+  patientRqty: Int @deprecated(reason: "Field is deprecated!")
+  patientRprice: Float @deprecated(reason: "Field is deprecated!")
+  patientLproductId: Int @deprecated(reason: "Field is deprecated!")
+  patientLproductName: String @deprecated(reason: "Field is deprecated!")
+  patientLpwr: String @deprecated(reason: "Field is deprecated!")
+  patientLpwrsign: String @deprecated(reason: "Field is deprecated!")
+  patientLbc: String @deprecated(reason: "Field is deprecated!")
+  patientLdia: String @deprecated(reason: "Field is deprecated!")
+  patientLcyl: String @deprecated(reason: "Field is deprecated!")
+  patientLaxis: String @deprecated(reason: "Field is deprecated!")
+  patientLadd: String @deprecated(reason: "Field is deprecated!")
+  patientLcolor: String @deprecated(reason: "Field is deprecated!")
+  patientLupc: String @deprecated(reason: "Field is deprecated!")
+  patientLqty: Int @deprecated(reason: "Field is deprecated!")
+  patientLprice: Float @deprecated(reason: "Field is deprecated!")
+  patientRxVerified: Boolean @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedDate: AWSDateTime @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedBy: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedMethod: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedProof: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedIP: String @deprecated(reason: "Field is deprecated!")
+  patientRxExpires: String @deprecated(reason: "Field is deprecated!")
+  patientInsurProviderId: Int
+  patientInsurProviderOther: String
+  patientInsurGroupId: String
+  patientInsurSubscriberId: String
+  patientInsurMemberId: String
+  patientInsurMemberRelation: String
+  patientInsurSubFname: String
+  patientInsurSubMname: String
+  patientInsurSubLname: String
+  patientInsurSubSuffix: String
+  patientInsurSubDob: String
+  patientInsurSubAddress1: String
+  patientInsurSubAddress2: String
+  patientInsurSubCity: String
+  patientInsurSubState: String
+  patientInsurSubZipcode: String
+  patientInsurSubCountry: String
+  patientInsurSubPhone: String
+  patientInsurSubSignature: String
+  patientInsurSubSignatureImg: String
+  patientInsurSubSignatureJson: String
+  patientInsurSubAgree: Boolean
+  patientTosDate: AWSDateTime
+  patientTosIp: String
+  patientActive: Boolean
+  patientInactiveDate: AWSDateTime
+  patientInactiveCode: Int
+  patientActiveReason: String
+  patientUnsubscribed: Boolean
+  patientUnsubscribedDate: String
+  patientSignupReferrer: String
+  patientUpdateDate: AWSDateTime
+  patientUpdateBy: String
+  patientUpdateIp: String
+  patientSetupStep: Int
+  patientUserAgent: String
+  patientBrowserName: String
+  patientBrowserVersion: String
+  patientEngineName: String
+  patientEngineVersion: String
+  patientPlatformName: String
+  patientPlatformType: String
+  patientPlatformVersion: String
+  createdAt: String
+  updatedAt: String
+  visionGroupId: Int
+  Prescription: Prescription
+  Receipts: [Receipt]!
+  "Exam appointments that the memeber has been scheduled for. Ordered by date DESC"
+  Exams: [Exam]!
+}
+
+input UpdatePatientsInput {
+  id: Int!
+  "used to trigger a patient delivery in the next three business days"
+  nextDelivery: Boolean
+  patientAddDate: AWSDateTime
+  patientSubscribeDate: AWSDateTime
+  patientAffiliate: String
+  patientInOfficeId: Int
+  patientReferCorporateId: Int
+  patientReferShareId: Int
+  patientFamilyMember: Boolean
+  patientUniqueShareId: String
+  patientExamFunnel: Boolean
+  patientExamFunnelStep: Int
+  patientMemberRate: Float
+  patientMemberRateOverride: Float
+  patientMemberRateOverrideExp: String
+  patientLensesPerWeek: Int
+  patientDeliveryCycle: Int
+  patientNextMonthlyCharge: AWSDateTime
+  patientPreviousChargeStatus: Boolean
+  patient3dayPaymentAlertViewed: AWSDateTime
+  patient1dayPaymentAlertViewed: AWSDateTime
+  patientFailedChargeAttempts: Int
+  patientFailedChargeReceiptViewed: AWSDateTime
+  patientCollectionLetter1Sent: AWSDateTime
+  patientCollectionLetter1Received: AWSDateTime
+  patientCollectionLetter1Pdf: String
+  patientCollectionLetter2Sent: AWSDateTime
+  patientCollectionLetter2Received: AWSDateTime
+  patientCollectionLetter2Message: String
+  patientCollectionLetter2Tracking: String
+  patientCollectionLetter2Report: String
+  patientCollectionLetter2Pdf: String
+  patientCollectionLetter3Sent: AWSDateTime
+  patientCollectionLetter3Received: AWSDateTime
+  patientCollectionLetter3Message: String
+  patientCollectionLetter3Tracking: String
+  patientCollectionLetter3Report: String
+  patientCollectionLetter3Pdf: String
+  patientCollectionException: String
+  patientSentToCollections: String
+  patientSettled: Boolean
+  patientSettledDate: AWSDateTime
+  patientSettledAmount: Float
+  patientDailiesWearer: Boolean
+  patientLensType: Int
+  patientWearsContacts: Int
+  patientHasPrescription: Boolean
+  patientSignupApptWhen: String
+  patientSignupApptDay1: String
+  patientSignupApptFrom1: String
+  patientSignupApptTo1: String
+  patientSignupApptDay2: String
+  patientSignupApptFrom2: String
+  patientSignupApptTo2: String
+  patientSignupApptDay3: String
+  patientSignupApptFrom3: String
+  patientSignupApptTo3: String
+  patientSignupApptWhere: String
+  patientSignupApptWhereAddress: String
+  patientSignupApptWhereCity: String
+  patientSignupApptWhereState: String
+  patientSignupApptWhereZipcode: String
+  patientSignupApptPreferred: String
+  patientSignupComments: String
+  patientNewTeamMember: Int
+  patientNewFollowUpPing: AWSDateTime
+  patientNewFollowUpPingSent: AWSDateTime
+  patientNewFollowUpPingViewed: AWSDateTime
+  patientNewFollowUpPingClicked: AWSDateTime
+  patientNewFollowUpPingClickedWhat: String
+  patientNewHelloMsg: AWSDateTime
+  patientNewHelloMsgViewed: AWSDateTime
+  patientNewHelloMsgClicked: AWSDateTime
+  patientNewHelloMsgFollow1: AWSDateTime
+  patientNewHelloMsgFollow1Viewed: AWSDateTime
+  patientNewHelloMsgFollow1Clicked: AWSDateTime
+  patientNewHelloMsgFollow1ClickedWhat: String
+  patientNewHelloMsgFollow2: AWSDateTime
+  patientNewHelloMsgFollow2Viewed: AWSDateTime
+  patientNewHelloMsgFollow2Clicked: AWSDateTime
+  patientNewHelloMsgFollow2ClickedWhat: AWSDateTime
+  patientNewBooking: AWSDateTime
+  patientNewBookingViewed: AWSDateTime
+  patientNewAppt: AWSDateTime
+  patientNewApptTimeZone: String
+  patientNewApptNotesString: String
+  patientNewApptNoteToPatient: String
+  patientNewApptConf: AWSDateTime
+  patientNewApptConfViewed: AWSDateTime
+  patientNewApptConfFollow1: AWSDateTime
+  patientNewApptConfFollow1Viewed: AWSDateTime
+  patientNewApptConfFollow2: AWSDateTime
+  patientNewApptConfFollow2Viewed: AWSDateTime
+  patientNewApptReschedule: Boolean
+  patientNewApptApproved: AWSDateTime
+  patientNewApptRemind3day: AWSDateTime
+  patientNewApptRemind3dayViewed: AWSDateTime
+  patientNewApptRemind1day: AWSDateTime
+  patientNewApptRemind1dayViewed: AWSDateTime
+  patientNewApptPostExam: AWSDateTime
+  patientNewApptPostExamViewed: AWSDateTime
+  patientNewDocLetterSent: AWSDateTime
+  patientNewDocLetterFaxed: AWSDateTime
+  patientNewDocLetterPdf: String
+  patientNewDocLetterViewed: AWSDateTime
+  patientNewPaymentRequest: AWSDateTime
+  patientNewPaymentRequestViewed: AWSDateTime
+  patientNewSbPaid: AWSDateTime
+  patientNewDocQuoteExam: Float
+  patientNewDocQuoteRefraction: Float
+  patientNewDocQuoteFitting: Float
+  patientNewDocQuoteOther: Float
+  patientNewDocQuoteOtherNotes: String
+  patientNewDocPayInfoProvided: AWSDateTime
+  patientNewDocPayInfoProvidedTo: String
+  patientNewDocPayReceiptLogged: Boolean
+  patientNewGeneralNotes: String
+  patientFirstname: String
+  patientMiddlename: String
+  patientLastname: String
+  patientSuffix: String
+  patientDob: AWSDateTime
+  patientSex: String
+  patientDAddress1: String
+  patientDAddress2: String
+  patientDCity: String
+  patientDState: String
+  patientDZipcode: String
+  patientDCountry: String
+  patientDLatitude: Float
+  patientDLongitude: Float
+  patientDEmail: String
+  patientDEmailNotify: Boolean
+  patientDMobile: String
+  patientDMobileNotify: Boolean
+  patientDNextDate: String
+  patientDNextDateOvernight: Boolean
+  patientDocId: Int
+  patientDocName: String
+  patientDocCity: String
+  patientDocState: String
+  patientDocPhone: String
+  patientDocFax: String
+  patientDocContact: String
+  patientDocContactEmail: String
+  patientRxImg: String @deprecated(reason: "Field is deprecated!")
+  patientRproductId: Int @deprecated(reason: "Field is deprecated!")
+  patientRproductName: String @deprecated(reason: "Field is deprecated!")
+  patientRpwr: String @deprecated(reason: "Field is deprecated!")
+  patientRpwrsign: String @deprecated(reason: "Field is deprecated!")
+  patientRbc: String @deprecated(reason: "Field is deprecated!")
+  patientRdia: String @deprecated(reason: "Field is deprecated!")
+  patientRcyl: String @deprecated(reason: "Field is deprecated!")
+  patientRaxis: String @deprecated(reason: "Field is deprecated!")
+  patientRadd: String @deprecated(reason: "Field is deprecated!")
+  patientRcolor: String @deprecated(reason: "Field is deprecated!")
+  patientRupc: String @deprecated(reason: "Field is deprecated!")
+  patientRqty: Int @deprecated(reason: "Field is deprecated!")
+  patientRprice: Float @deprecated(reason: "Field is deprecated!")
+  patientLproductId: Int @deprecated(reason: "Field is deprecated!")
+  patientLproductName: String @deprecated(reason: "Field is deprecated!")
+  patientLpwr: String @deprecated(reason: "Field is deprecated!")
+  patientLpwrsign: String @deprecated(reason: "Field is deprecated!")
+  patientLbc: String @deprecated(reason: "Field is deprecated!")
+  patientLdia: String @deprecated(reason: "Field is deprecated!")
+  patientLcyl: String @deprecated(reason: "Field is deprecated!")
+  patientLaxis: String @deprecated(reason: "Field is deprecated!")
+  patientLadd: String @deprecated(reason: "Field is deprecated!")
+  patientLcolor: String @deprecated(reason: "Field is deprecated!")
+  patientLupc: String @deprecated(reason: "Field is deprecated!")
+  patientLqty: Int @deprecated(reason: "Field is deprecated!")
+  patientLprice: Float @deprecated(reason: "Field is deprecated!")
+  patientRxVerified: Boolean @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedDate: AWSDateTime @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedBy: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedMethod: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedProof: String @deprecated(reason: "Field is deprecated!")
+  patientRxVerifiedIP: String @deprecated(reason: "Field is deprecated!")
+  patientRxExpires: String @deprecated(reason: "Field is deprecated!")
+  patientInsurProviderId: Int
+  patientInsurProviderOther: String
+  patientInsurGroupId: String
+  patientInsurSubscriberId: String
+  patientInsurMemberId: String
+  patientInsurMemberRelation: String
+  patientInsurSubFname: String
+  patientInsurSubMname: String
+  patientInsurSubLname: String
+  patientInsurSubSuffix: String
+  patientInsurSubDob: String
+  patientInsurSubAddress1: String
+  patientInsurSubAddress2: String
+  patientInsurSubCity: String
+  patientInsurSubState: String
+  patientInsurSubZipcode: String
+  patientInsurSubCountry: String
+  patientInsurSubPhone: String
+  patientInsurSubSignature: String
+  patientInsurSubSignatureImg: String
+  patientInsurSubSignatureJson: String
+  patientInsurSubAgree: Boolean
+  patientTosDate: AWSDateTime
+  patientTosIp: String
+  patientActive: Boolean
+  patientInactiveDate: AWSDateTime
+  patientInactiveCode: Int
+  patientActiveReason: String
+  patientUnsubscribed: Boolean
+  patientUnsubscribedDate: String
+  patientSignupReferrer: String
+  patientUpdateDate: AWSDateTime
+  patientUpdateBy: String
+  patientUpdateIp: String
+  patientSetupStep: Int
+  patientUserAgent: String
+  patientBrowserName: String
+  patientBrowserVersion: String
+  patientEngineName: String
+  patientEngineVersion: String
+  patientPlatformName: String
+  patientPlatformType: String
+  patientPlatformVersion: String
+}

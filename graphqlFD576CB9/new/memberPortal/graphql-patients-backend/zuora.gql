@@ -1,0 +1,82 @@
+input CreateMembershipSubscriptionInput {
+  subscriberId: Int
+  patientId: Int!
+  firstName: String
+  lastName: String
+  address1: String
+  address2: String
+  city: String
+  state: String
+  postalCode: String
+  phone: String
+  email: String
+  paymentMethodId: String
+  subscriptionDate: String!
+  productRatePlanId: String!
+  existingAccountNumber: String
+}
+
+input CreateAccountCreditInput {
+  subscriptionNumber: String!
+  creditAmount: String!
+  comment: String
+}
+
+type PaymentHistory {
+  transactions: [Transaction]
+  paymentTotal: String
+  paymentCount: Int!
+}
+
+type Transaction {
+  amount: String!
+  date: String!
+  status: String!
+  transactionId: String
+  bankMessage: String!
+}
+
+input UpdatePaymentDateInput {
+  accountNumber: String!
+  newPaymentDate: String!
+}
+
+type AccountCreditCardDetails {
+  id: String!
+  cardType: String!
+  cardNumber: String!
+  expirationMonth: Int!
+  expirationYear: Int!
+  cardHolderInfo: CardHolderInfo!
+}
+
+type CardHolderInfo {
+  cardHolderName: String
+  addressLine1: String
+  addressLine2: String
+  city: String
+  state: String
+  zipCode: String
+  country: String
+  phone: AWSPhone
+  email: AWSEmail
+}
+
+input UpdateAccountCreditCardInput {
+  accountNumber: String!
+  paymentMethodId: String!
+}
+
+"type BillingAccount describes an account from our payment processor"
+type BillingAccount {
+  delinquent: Boolean
+}
+
+"Input for overriding a member subscription rate"
+input UpdateSubscriptionPriceInput {
+  accountNumber: String!
+  subscriptionNumber: String!
+  newPrice: String!
+  "Optional - Expires the override on the given date."
+  expirationDate: AWSDateTime
+}

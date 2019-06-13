@@ -1,0 +1,50 @@
+type Prescription {
+	os: [Eye]
+	od: [Eye]
+	patientId: Int!
+	expirationDate: String
+}
+
+type Eye {
+	power: String
+	sign: String
+	baseCurve: String
+	diameter: String
+	cyl: String
+	axis: String
+	add: String
+	color: String
+	details: EyeDetails
+}
+
+type EyeDetails {
+	name: String!
+	quantity: Int!
+	upc: String!
+	price: Float!
+	productId: Int!
+}
+
+input PrescriptionInput {
+	os: [EyeInput]
+	od: [EyeInput]
+	patientId: Int!
+	expirationDate: String
+}
+
+input EyeInput {
+	power: String
+	sign: String
+	baseCurve: String
+	diameter: String
+	cyl: String
+	axis: String
+	add: String
+	color: String
+	details: EyeDetailsInput!
+}
+
+input EyeDetailsInput {
+	quantity: Int!
+	productId: Int!
+}
