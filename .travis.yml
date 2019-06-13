@@ -2,6 +2,7 @@ language: bash
 branches:
   only:
     - develop
+    - staging
     - master
 deploy:
   provider: script
