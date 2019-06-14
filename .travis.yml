@@ -13,3 +13,10 @@ branches:
 deploy:
   provider: script
   script: bash scripts/deploy.sh
+
+notifications:
+  slack: 
+    rooms:
+      - sightbox:CP58ayEbfmLBsslASH0QZKsr
+    on_success: change # default: always
+    on_failure: always # default: always
