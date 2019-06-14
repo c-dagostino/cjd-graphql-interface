@@ -7,6 +7,7 @@ branch=$TRAVIS_BRANCH
 repo=$TRAVIS_REPO_SLUG
 repo=${repo#*/} # Remove 'github-owner/' from the string to retrieve 'repo-name'
 
+
 # Set '$env' to 'prod' or branch name
 [[ "$branch" == "master" ]] && env="travisci" || env="$branch"
 
