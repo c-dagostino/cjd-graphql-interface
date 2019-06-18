@@ -9,9 +9,9 @@ script:
       # - npm run graphql:validate
 branches:
   only:
-    - $BRANCH_NAME_DEV
-    - $BRANCH_NAME_STAGING
-    - $BRANCH_NAME_PROD
+    - develop
+    - staging
+    - master
 deploy:
   provider: script
   script: bash scripts/deploy.sh
