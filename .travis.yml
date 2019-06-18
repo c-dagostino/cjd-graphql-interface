@@ -6,11 +6,12 @@ before_install:
   - npm i -g npm
 script: 
       - npm run graphql:build-schema
-      # - npm run graphql:validat
+      # - npm run graphql:validate
 branches:
   only:
-    - develop
-    - master
+    - ${BRANCH_NAME_DEV}
+    - ${BRANCH_NAME_STAGING}
+    - ${BRANCH_NAME_PROD}
 deploy:
   provider: script
   script: bash scripts/deploy.sh
