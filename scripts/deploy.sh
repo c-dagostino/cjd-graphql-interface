@@ -23,6 +23,7 @@ case $branch in
         env="travisci"
         aws_access_key_id = $AWS_ACCESS_KEY_ID_DEV
         aws_secret_access_key = $AWS_SECRET_ACCESS_KEY_DEV
+        echo "parsed master vars"
         ;;
 esac
 
@@ -33,7 +34,8 @@ esac
 $stackery login --email $STACKERY_EMAIL --password $STACKERY_PASSWORD --non-interactive
 
 # Deploy to Stackery using AWS access and secret keys
-
-echo "Deploying stack $repo to the $env environment using git branch $branch"
+echo "aws key = $aws_access_key_id"
+echo "aws secret = $aws_secret_access_key"
+echo "Deploying stack $repo to the $env environment $env using git branch $branch"
 echo "repo = $repo"
 $stackery deploy -n $repo -e $env -r $branch --access-key-id $aws_access_key_id --secret-access-key $aws_secret_access_key --non-interactive
