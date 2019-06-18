@@ -6,24 +6,24 @@ stackery=/tmp/stackery
 branch=$TRAVIS_BRANCH
 repo=$TRAVIS_REPO_SLUG
 repo=${repo#*/} # Remove 'github-owner/' from the string to retrieve 'repo-name'
-
+aws_access_key_id=""
+aws_secret_access_key="" 
 
 case $branch in
     develop)
         env="travisci-develop"
-        aws_access_key_id = $AWS_ACCESS_KEY_ID_DEV
-        aws_secret_access_key = $AWS_SECRET_ACCESS_KEY_DEV
+        $aws_access_key_id=$AWS_ACCESS_KEY_ID_DEV
+        $aws_secret_access_key=$AWS_SECRET_ACCESS_KEY_DEV
         ;;
     staging)
         env="travisci-staging"
-        aws_access_key_id = $AWS_ACCESS_KEY_ID_DEV
-        aws_secret_access_key = $AWS_SECRET_ACCESS_KEY_DEV
+        $aws_access_key_id=$AWS_ACCESS_KEY_ID_DEV
+        $aws_secret_access_key=$AWS_SECRET_ACCESS_KEY_DEV
         ;;
     master)
         env="travisci"
-        aws_access_key_id = $AWS_ACCESS_KEY_ID_DEV
-        aws_secret_access_key = $AWS_SECRET_ACCESS_KEY_DEV
-        echo "parsed master vars"
+        $aws_access_key_id=$AWS_ACCESS_KEY_ID_DEV
+        $aws_secret_access_key=$AWS_SECRET_ACCESS_KEY_DEV
         ;;
 esac
 
@@ -34,8 +34,6 @@ esac
 $stackery login --email $STACKERY_EMAIL --password $STACKERY_PASSWORD --non-interactive
 
 # Deploy to Stackery using AWS access and secret keys
-echo "aws key = $aws_access_key_id"
-echo "aws secret = $aws_secret_access_key"
 echo "Deploying stack $repo to the $env environment $env using git branch $branch"
 echo "repo = $repo"
 $stackery deploy -n $repo -e $env -r $branch --access-key-id $aws_access_key_id --secret-access-key $aws_secret_access_key --non-interactive
