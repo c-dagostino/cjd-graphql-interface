@@ -12,18 +12,18 @@ aws_secret_access_key=""
 case $branch in
     develop)
         env="travisci-develop"
-        $aws_access_key_id=$AWS_ACCESS_KEY_ID_DEV
-        $aws_secret_access_key=$AWS_SECRET_ACCESS_KEY_DEV
+        $aws_access_key_id="$AWS_ACCESS_KEY_ID_DEV"
+        $aws_secret_access_key="$AWS_SECRET_ACCESS_KEY_DEV"
         ;;
     staging)
         env="travisci-staging"
-        $aws_access_key_id=$AWS_ACCESS_KEY_ID_DEV
-        $aws_secret_access_key=$AWS_SECRET_ACCESS_KEY_DEV
+        $aws_access_key_id="$AWS_ACCESS_KEY_ID_DEV"
+        $aws_secret_access_key="$AWS_SECRET_ACCESS_KEY_DEV"
         ;;
     master)
         env="travisci"
-        $aws_access_key_id=$AWS_ACCESS_KEY_ID_DEV
-        $aws_secret_access_key=$AWS_SECRET_ACCESS_KEY_DEV
+        $aws_access_key_id="$AWS_ACCESS_KEY_ID_DEV"
+        $aws_secret_access_key="$AWS_SECRET_ACCESS_KEY_DEV"
         ;;
 esac
 
