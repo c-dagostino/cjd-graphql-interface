@@ -8,7 +8,7 @@ repo=$TRAVIS_REPO_SLUG
 repo=${repo#*/} # Remove 'github-owner/' from the string to retrieve 'repo-name'
 
 
-case branch in
+case $branch in
     develop)
         env="travisci-develop"
         aws_access_key_id = $AWS_ACCESS_KEY_ID_DEV
@@ -34,6 +34,6 @@ $stackery login --email $STACKERY_EMAIL --password $STACKERY_PASSWORD --non-inte
 
 # Deploy to Stackery using AWS access and secret keys
 
-echo "Deploying stack $repo to environment $env using git branch $branch"
+echo "Deploying stack $repo to the $env environment using git branch $branch"
 echo "repo = $repo"
 $stackery deploy -n $repo -e $env -r $branch --access-key-id $aws_access_key_id --secret-access-key $aws_secret_access_key --non-interactive
