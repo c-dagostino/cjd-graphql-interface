@@ -11,18 +11,18 @@ repo=${repo#*/} # Remove 'github-owner/' from the string to retrieve 'repo-name'
 case branch in
     develop)
         env="travisci-develop"
-        AWS_ACCESS_KEY_ID = $AWS_ACCESS_KEY_DEV
-        AWS_SECRET_ACCESS_KEY = $AWS_SECRET_ACCESS_DEV
+        aws_access_key_id = $AWS_ACCESS_KEY_DEV
+        aws_secret_access_key = $AWS_SECRET_ACCESS_DEV
         ;;
     staging)
         env="travisci-staging"
-        AWS_ACCESS_KEY_ID = $AWS_ACCESS_KEY_DEV
-        AWS_SECRET_ACCESS_KEY = $AWS_SECRET_ACCESS_DEV
+        aws_access_key_id = $AWS_ACCESS_KEY_DEV
+        aws_secret_access_key = $AWS_SECRET_ACCESS_DEV
         ;;
     master)
         env="travisci"
-        AWS_ACCESS_KEY_ID = $AWS_ACCESS_KEY_DEV
-        AWS_SECRET_ACCESS_KEY = $AWS_SECRET_ACCESS_DEV
+        aws_access_key_id = $AWS_ACCESS_KEY_DEV
+        aws_secret_access_key = $AWS_SECRET_ACCESS_DEV
         ;;
 esac
 
@@ -36,4 +36,4 @@ $stackery login --email $STACKERY_EMAIL --password $STACKERY_PASSWORD --non-inte
 
 echo "Deploying stack $repo to environment $env using git branch $branch"
 echo "repo = $repo"
-$stackery deploy -n $repo -e $env -r $branch --access-key-id AWS_ACCESS_KEY_ID --secret-access-key AWS_SECRET_ACCESS_KEY --non-interactive
+$stackery deploy -n $repo -e $env -r $branch --access-key-id $aws_access_key_id --secret-access-key $aws_secret_access_key --non-interactive
