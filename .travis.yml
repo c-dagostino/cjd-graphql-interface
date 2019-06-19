@@ -10,8 +10,8 @@ script:
 branches:
   only:
     - develop
-    - staging
     - master
+    # - staging
 deploy:
   provider: script
   script: bash scripts/deploy.sh
